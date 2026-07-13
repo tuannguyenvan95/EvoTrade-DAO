@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Bot, LineChart, Wallet, ShieldCheck, Cpu, RefreshCw, CheckCircle2, ChevronLeft, Database } from 'lucide-react';
+import { Bot, LineChart, Wallet, ShieldCheck, Cpu, RefreshCw, CheckCircle2, ChevronLeft, Database, ExternalLink } from 'lucide-react';
 import { ethers } from 'ethers';
 import toast, { Toaster } from 'react-hot-toast';
 import { AreaChart, Area, Tooltip, ResponsiveContainer } from 'recharts';
@@ -40,6 +40,7 @@ const Dashboard = () => {
   const [isConnecting, setIsConnecting] = useState(false);
   const [proposals, setProposals] = useState(MOCK_PROPOSALS);
   const [isDemoRunning, setIsDemoRunning] = useState(false);
+  const [cryptoPrices, setCryptoPrices] = useState<any>({});
 
   // Auto connect or Read-only setup
   useEffect(() => {
@@ -49,6 +50,12 @@ const Dashboard = () => {
       console.log("Read-only provider connected to Ritual", await provider.getNetwork());
     };
     setupProvider();
+
+    // Fetch live prices from CoinGecko
+    fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum,bitcoin,uniswap&vs_currencies=usd&include_24hr_change=true')
+      .then(res => res.json())
+      .then(data => setCryptoPrices(data))
+      .catch(console.error);
   }, []);
 
   const connectWallet = async () => {
@@ -107,7 +114,15 @@ const Dashboard = () => {
       
       // Simulate Blockchain Transaction Delay
       setTimeout(() => {
-        toast.success('Vote successfully registered on Ritual Chain!', { id: toastId });
+        toast.dismiss(toastId);
+        toast(() => (
+          <div className="flex flex-col gap-1">
+            <span className="font-semibold text-emerald-400">Vote successfully registered!</span>
+            <a href="https://explorer.ritual.net" target="_blank" rel="noreferrer" className="text-xs text-indigo-400 hover:text-indigo-300 flex items-center gap-1 mt-1">
+              View on Ritual Explorer <ExternalLink className="w-3 h-3" />
+            </a>
+          </div>
+        ), { duration: 5000, style: { background: '#1e293b', color: '#fff', border: '1px solid rgba(255,255,255,0.1)' } });
         
         // Update UI Realtime
         setProposals(prev => prev.map(p => {
@@ -182,6 +197,33 @@ const Dashboard = () => {
           </div>
         </div>
       </header>
+
+      {/* Live Crypto Ticker */}
+      <div className="w-full bg-slate-900 border-b border-white/5 py-2 px-6 flex justify-center">
+        <div className="flex flex-wrap justify-center gap-6 md:gap-12 text-xs font-mono">
+          <div className="flex items-center gap-2">
+            <span className="text-slate-400">ETH</span>
+            <span className="text-white">${cryptoPrices.ethereum?.usd?.toLocaleString() || '---'}</span>
+            <span className={cryptoPrices.ethereum?.usd_24h_change >= 0 ? "text-emerald-400" : "text-red-400"}>
+              {cryptoPrices.ethereum?.usd_24h_change > 0 ? '+' : ''}{cryptoPrices.ethereum?.usd_24h_change?.toFixed(2)}%
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-slate-400">BTC</span>
+            <span className="text-white">${cryptoPrices.bitcoin?.usd?.toLocaleString() || '---'}</span>
+            <span className={cryptoPrices.bitcoin?.usd_24h_change >= 0 ? "text-emerald-400" : "text-red-400"}>
+              {cryptoPrices.bitcoin?.usd_24h_change > 0 ? '+' : ''}{cryptoPrices.bitcoin?.usd_24h_change?.toFixed(2)}%
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-slate-400">UNI</span>
+            <span className="text-white">${cryptoPrices.uniswap?.usd?.toLocaleString() || '---'}</span>
+            <span className={cryptoPrices.uniswap?.usd_24h_change >= 0 ? "text-emerald-400" : "text-red-400"}>
+              {cryptoPrices.uniswap?.usd_24h_change > 0 ? '+' : ''}{cryptoPrices.uniswap?.usd_24h_change?.toFixed(2)}%
+            </span>
+          </div>
+        </div>
+      </div>
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-6 py-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
