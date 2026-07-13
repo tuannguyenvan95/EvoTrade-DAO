@@ -258,14 +258,7 @@ const Dashboard = () => {
           </Link>
 
           <div className="flex items-center gap-4">
-            <button 
-              onClick={runRandomDemo}
-              disabled={isDemoRunning}
-              className="px-4 py-2 bg-indigo-500/20 text-indigo-400 hover:bg-indigo-500/30 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 disabled:opacity-50"
-            >
-              <RefreshCw className={`w-4 h-4 ${isDemoRunning ? 'animate-spin' : ''}`} />
-              Random Demo
-            </button>
+
             <button 
               onClick={connectWallet}
               disabled={isConnecting}
@@ -480,19 +473,29 @@ const Dashboard = () => {
             <h2 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
               {activeTab === 'active' ? 'Active Proposals' : 'Your Voting History'}
             </h2>
-            <div className="flex gap-2">
-              <button
-                onClick={() => setActiveTab('active')}
-                className={`px-4 py-2 text-sm font-semibold rounded-full transition-colors ${activeTab === 'active' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
+            <div className="flex items-center gap-3">
+              <button 
+                onClick={runRandomDemo}
+                disabled={isDemoRunning}
+                className="px-4 py-2 bg-indigo-50 text-indigo-600 border border-indigo-200 hover:bg-indigo-100 rounded-full text-sm font-semibold transition-colors flex items-center gap-2 disabled:opacity-50"
               >
-                Active
+                <RefreshCw className={`w-4 h-4 ${isDemoRunning ? 'animate-spin' : ''}`} />
+                Random Demo
               </button>
-              <button
-                onClick={() => setActiveTab('history')}
-                className={`px-4 py-2 text-sm font-semibold rounded-full transition-colors ${activeTab === 'history' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
-              >
-                History
-              </button>
+              <div className="flex gap-2 ml-2 pl-4 border-l border-slate-200">
+                <button
+                  onClick={() => setActiveTab('active')}
+                  className={`px-4 py-2 text-sm font-semibold rounded-full transition-colors ${activeTab === 'active' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
+                >
+                  Active
+                </button>
+                <button
+                  onClick={() => setActiveTab('history')}
+                  className={`px-4 py-2 text-sm font-semibold rounded-full transition-colors ${activeTab === 'history' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
+                >
+                  History
+                </button>
+              </div>
             </div>
           </div>
           
