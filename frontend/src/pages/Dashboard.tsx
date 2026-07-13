@@ -1,13 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Bot, LineChart, Wallet, ShieldCheck, Cpu, RefreshCw, CheckCircle2 } from 'lucide-react';
 import { ethers } from 'ethers';
 
-// Mock Addresses from Deployment
-const CONTRACT_ADDRESSES = {
-  token: '0x84bB5b53C299475Adf4Df7ebE7f2B12c68452592',
-  dao: '0x08dD1857Ce6f6ae0883C53887B59788D67216be5',
-  agent: '0xd8b6305a1A2dA9108C8c33Fa045177f6f4bcc58f'
-};
+declare global {
+  interface Window {
+    ethereum: any;
+  }
+}
+
+// export const CONTRACT_ADDRESSES = {
+//   token: '0x84bB5b53C299475Adf4Df7ebE7f2B12c68452592',
+//   dao: '0x08dD1857Ce6f6ae0883C53887B59788D67216be5',
+//   agent: '0xd8b6305a1A2dA9108C8c33Fa045177f6f4bcc58f'
+// };
 
 const MOCK_PROPOSALS = [
   { id: 1, title: 'Rebalance to 60% ETH / 40% BTC', status: 'Passed', votesFor: 12000, votesAgainst: 300 },
