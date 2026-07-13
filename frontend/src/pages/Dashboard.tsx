@@ -291,12 +291,11 @@ const Dashboard = () => {
       </div>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-6 py-8 grid grid-cols-1 xl:grid-cols-3 gap-8">
-        
-        {/* Left Column: Stats & Allocation */}
-        <div className="space-y-6 xl:col-span-1">
+      <main className="max-w-7xl mx-auto px-6 py-8 grid grid-cols-1 xl:grid-cols-3 gap-6 items-stretch">
+          {/* Left Column: Stats & Allocation */}
+          <div className="flex flex-col space-y-6 xl:col-span-1">
           {/* Treasury Stats */}
-          <div className="p-6 rounded-2xl bg-white/5 border border-white/10 relative overflow-hidden">
+          <div className="p-6 rounded-2xl bg-white/5 border border-white/10 relative overflow-hidden flex flex-col h-full">
             <div className="flex items-center gap-2 text-slate-400 mb-4 relative z-10">
               <LineChart className="w-5 h-5" />
               <h2 className="font-semibold">Treasury TVL</h2>
@@ -305,7 +304,7 @@ const Dashboard = () => {
             <div className="text-sm text-emerald-400 flex items-center gap-1 mb-4 relative z-10">
               <CheckCircle2 className="w-4 h-4" /> +5.2% this week (AI Managed)
             </div>
-            <div className="h-24 -mx-6 -mb-6">
+            <div className="h-24 -mx-6 -mb-6 mt-auto">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={MOCK_TVL_DATA}>
                   <defs>
@@ -322,7 +321,7 @@ const Dashboard = () => {
           </div>
 
           {/* Treasury Allocation (Pie Chart) */}
-          <div className="p-6 rounded-2xl bg-white/5 border border-white/10">
+          <div className="p-6 rounded-2xl bg-white/5 border border-white/10 flex flex-col">
             <div className="flex items-center gap-2 text-slate-400 mb-4">
               <PieChartIcon className="w-5 h-5 text-amber-400" />
               <h2 className="font-semibold">Asset Allocation</h2>
@@ -362,7 +361,7 @@ const Dashboard = () => {
           </div>
 
           {/* Execution History */}
-          <div className="p-6 rounded-2xl bg-white/5 border border-white/10">
+          <div className="p-6 rounded-2xl bg-white/5 border border-white/10 flex-1">
             <div className="flex items-center gap-2 text-slate-400 mb-4">
               <Activity className="w-5 h-5 text-emerald-400" />
               <h2 className="font-semibold">Execution History (Live)</h2>
@@ -381,7 +380,7 @@ const Dashboard = () => {
           </div>
 
           {/* TEE Enclave Status */}
-          <div className="p-6 rounded-2xl bg-white/5 border border-white/10 relative overflow-hidden">
+          <div className="p-6 rounded-2xl bg-white/5 border border-white/10 relative overflow-hidden flex flex-col">
             <div className="absolute top-0 right-0 p-4 opacity-10">
               <Server className="w-24 h-24" />
             </div>
@@ -413,17 +412,18 @@ const Dashboard = () => {
           </div>
 
           {/* Governance Leaderboard */}
-          <div className="p-6 rounded-2xl bg-white/5 border border-white/10">
+          <div className="p-6 rounded-2xl bg-white/5 border border-white/10 flex-1 flex flex-col">
             <div className="flex items-center gap-2 text-slate-400 mb-4">
               <Trophy className="w-5 h-5 text-amber-400" />
               <h2 className="font-semibold">Top Delegators</h2>
             </div>
-            <div className="space-y-4">
+            <div className="space-y-4 flex-1">
               {[
                 { address: '0x1A4...8B2', power: '450k', color: 'text-amber-400' },
                 { address: '0x8F2...3C9', power: '320k', color: 'text-slate-300' },
                 { address: '0x3E1...7A5', power: '180k', color: 'text-orange-400' },
                 { address: '0x9D4...2F1', power: '150k', color: 'text-slate-400' },
+                { address: '0x2B8...1E9', power: '120k', color: 'text-slate-500' },
               ].map((user, i) => (
                 <div key={i} className="flex items-center justify-between text-sm bg-black/20 p-2 rounded-lg">
                   <div className="flex items-center gap-3">
@@ -470,56 +470,62 @@ const Dashboard = () => {
             Active Proposals
           </h2>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {proposals.map((p) => {
-              const totalVotes = p.votesFor + p.votesAgainst || 1;
-              const forPercent = ((p.votesFor / totalVotes) * 100).toFixed(1);
-              const againstPercent = ((p.votesAgainst / totalVotes) * 100).toFixed(1);
-
-              return (
-                <div key={p.id} className="p-6 rounded-2xl bg-white/5 border border-white/10 hover:border-white/20 transition-colors">
-                  <div className="flex flex-col sm:flex-row sm:items-start justify-between mb-6 gap-4">
-                    <div>
-                      <div className="flex items-center gap-3 mb-2">
-                        <span className="text-sm text-slate-400">ID: #{p.id}</span>
-                        <span className={`px-2 py-1 rounded text-xs font-semibold ${p.status === 'Active' ? 'bg-blue-500/20 text-blue-400' : p.status === 'Passed' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400'}`}>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 auto-rows-fr">
+              {proposals.map((p) => {
+                const totalVotes = p.votesFor + p.votesAgainst || 1;
+                const forPercent = ((p.votesFor / totalVotes) * 100).toFixed(1);
+                const againstPercent = ((p.votesAgainst / totalVotes) * 100).toFixed(1);
+                
+                return (
+                  <div key={p.id} className="p-5 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors flex flex-col h-full">
+                    <div className="flex justify-between items-start mb-4">
+                      <div className="flex items-center gap-2">
+                        <span className="text-slate-400 text-sm font-mono">ID: #{p.id}</span>
+                        <span className={`text-xs px-2 py-1 rounded-md font-medium ${
+                          p.status === 'Active' ? 'bg-indigo-500/20 text-indigo-400' :
+                          p.status === 'Passed' ? 'bg-emerald-500/20 text-emerald-400' :
+                          'bg-amber-500/20 text-amber-400'
+                        }`}>
                           {p.status}
                         </span>
                       </div>
-                      <h3 className="text-xl font-semibold text-white">{p.title}</h3>
+                      
+                      {p.status === 'Active' && (
+                        <div className="flex gap-2">
+                          <button 
+                            onClick={() => handleVote(p.id, 'for')}
+                            className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 border border-emerald-500/20 transition-colors"
+                          >
+                            Vote FOR
+                          </button>
+                          <button 
+                            onClick={() => handleVote(p.id, 'against')}
+                            className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 border border-rose-500/20 transition-colors"
+                          >
+                            Vote AGAINST
+                          </button>
+                        </div>
+                      )}
                     </div>
-                    {/* Interactive Vote buttons calling Send Transaction */}
-                    <div className="flex items-center gap-2 shrink-0">
-                      <button 
-                        onClick={() => handleVote(p.id, 'for')}
-                        className="px-4 py-2 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 text-sm font-semibold transition-colors"
-                      >
-                        Vote FOR
-                      </button>
-                      <button 
-                        onClick={() => handleVote(p.id, 'against')}
-                        className="px-4 py-2 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 text-sm font-semibold transition-colors"
-                      >
-                        Vote AGAINST
-                      </button>
+
+                    <h3 className="text-lg font-bold text-white mb-6 flex-1 pr-4">{p.title}</h3>
+
+                    <div className="mt-auto">
+                      <div className="flex justify-between text-sm mb-2">
+                        <span className="text-emerald-400 font-medium">For: {p.votesFor.toLocaleString()} ({forPercent}%)</span>
+                        <span className="text-rose-400 font-medium">Against: {p.votesAgainst.toLocaleString()} ({againstPercent}%)</span>
+                      </div>
+                      <div className="w-full bg-rose-500/20 rounded-full h-2 flex overflow-hidden">
+                        <div 
+                          className="bg-emerald-500 h-full rounded-full transition-all duration-1000"
+                          style={{ width: `${forPercent}%` }}
+                        />
+                      </div>
                     </div>
                   </div>
-                  
-                  {/* Progress Bar */}
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-emerald-400">For: {p.votesFor.toLocaleString()} ({forPercent}%)</span>
-                      <span className="text-red-400">Against: {p.votesAgainst.toLocaleString()} ({againstPercent}%)</span>
-                    </div>
-                    <div className="w-full h-2 bg-slate-800 rounded-full overflow-hidden flex">
-                      <div className="bg-emerald-500 h-full transition-all duration-500" style={{ width: `${forPercent}%` }} />
-                      <div className="bg-red-500 h-full transition-all duration-500" style={{ width: `${againstPercent}%` }} />
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+                );
+              })}
+            </div>
 
         </div>
 
