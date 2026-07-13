@@ -229,10 +229,12 @@ const Dashboard = () => {
     }
   };
 
-  const terminalEndRef = useRef<HTMLDivElement>(null);
+  const terminalContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    terminalEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (terminalContainerRef.current) {
+      terminalContainerRef.current.scrollTop = terminalContainerRef.current.scrollHeight;
+    }
   }, [terminalLogs]);
 
   const handleTerminalSubmit = (e: React.FormEvent) => {
@@ -522,14 +524,13 @@ const Dashboard = () => {
               <Terminal className="w-4 h-4 text-indigo-400" />
               <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 tracking-wider">AI AGENT TEE TERMINAL</span>
             </div>
-            <div className="flex-1 p-4 overflow-y-auto font-mono text-xs space-y-2 flex flex-col justify-end">
+            <div ref={terminalContainerRef} className="flex-1 p-4 overflow-y-auto font-mono text-xs space-y-2 flex flex-col justify-end">
               {terminalLogs.map((log, i) => (
                 <div key={i} className={`flex gap-3 ${log.sender === 'user' ? 'text-emerald-400' : log.sender === 'system' ? 'text-slate-500 dark:text-slate-400' : 'text-indigo-300'}`}>
                   <span className="shrink-0">{log.sender === 'user' ? '>' : log.sender === 'system' ? '#' : 'Agent:'}</span>
                   <span className="break-words leading-relaxed">{log.text}</span>
                 </div>
               ))}
-              <div ref={terminalEndRef} />
             </div>
             <form onSubmit={handleTerminalSubmit} className="flex gap-2 p-4 pt-0 border-t border-indigo-500/10 mt-2 bg-white dark:bg-slate-900 text-slate-100/50">
               <span className="text-emerald-400 font-mono text-sm mt-1">{'>'}</span>
