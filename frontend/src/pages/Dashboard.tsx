@@ -4,7 +4,7 @@ import {
   Bot, LineChart, Wallet, 
   CheckCircle2, ChevronLeft, ExternalLink, 
   PieChart as PieChartIcon, Terminal, Activity,
-  Server, Shield, Trophy, Search, Moon, Sun
+  Server, Shield, Trophy, Search, Sun, Moon, Send
 } from 'lucide-react';
 import { useTheme } from '../components/ThemeProvider';
 import { ethers } from 'ethers';
@@ -532,15 +532,22 @@ const Dashboard = () => {
                 </div>
               ))}
             </div>
-            <form onSubmit={handleTerminalSubmit} className="flex gap-2 p-4 pt-0 border-t border-indigo-500/10 mt-2 bg-white dark:bg-slate-900 text-slate-100/50">
+            <form onSubmit={handleTerminalSubmit} className="flex gap-2 p-4 pt-0 border-t border-indigo-500/10 mt-2 bg-white dark:bg-slate-900 text-slate-100/50 items-center">
               <span className="text-emerald-400 font-mono text-sm mt-1">{'>'}</span>
               <input 
                 type="text" 
                 value={terminalInput}
                 onChange={e => setTerminalInput(e.target.value)}
-                className="flex-1 bg-transparent border-none outline-none text-emerald-400 font-mono text-sm placeholder:text-emerald-900/50"
+                className="flex-1 bg-transparent border-none outline-none text-emerald-400 font-mono text-sm placeholder:text-emerald-900/50 mt-1"
                 placeholder="Ask the AI agents about market strategy..."
               />
+              <button 
+                type="submit" 
+                className="p-1.5 rounded bg-indigo-500/10 text-indigo-400 hover:bg-indigo-500/20 transition-colors"
+                title="Send Command"
+              >
+                <Send className="w-4 h-4" />
+              </button>
             </form>
           </div>
 
