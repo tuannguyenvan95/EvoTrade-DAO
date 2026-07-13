@@ -67,11 +67,24 @@ const Dashboard = () => {
   // Auto connect or Read-only setup + Polling crypto prices
   useEffect(() => {
     const setupProvider = async () => {
-      // Initialize Read-Only Provider for Ritual Testnet
-      const provider = new ethers.JsonRpcProvider('https://rpc.ritualfoundation.org');
-      console.log("Read-only provider connected to Ritual", await provider.getNetwork());
+      console.log("Read-only provider setup bypassed");
     };
     setupProvider();
+
+    // Check if wallet was already connected
+    const checkConnection = async () => {
+      if (typeof window.ethereum !== 'undefined') {
+        try {
+          const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+          if (accounts.length > 0) {
+            setAddress(accounts[0]);
+          }
+        } catch (err) {
+          console.error("Auto-connect failed", err);
+        }
+      }
+    };
+    checkConnection();
 
     const fetchPrices = () => {
       fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${COIN_IDS}&vs_currencies=usd&include_24hr_change=true`)
@@ -130,29 +143,29 @@ const Dashboard = () => {
 
     let toastId: string = '';
     try {
-      const provider = new ethers.BrowserProvider(window.ethereum);
-      const signer = await provider.getSigner();
-      
       toastId = toast.loading('Waiting for wallet signature & gas approval...');
       
-      // We use sendTransaction with a hardcoded gasLimit to bypass the Ritual RPC's broken eth_estimateGas
-      // This forces MetaMask to pop up a real Gas transaction!
-      const tx = await signer.sendTransaction({
-        to: address,
-        value: 0,
-        data: ethers.hexlify(ethers.toUtf8Bytes(`Vote ${type.toUpperCase()} Prop #${proposalId}`)),
-        gasLimit: 60000
+      // We use raw window.ethereum.request to bypass ethers.js gas estimation and coalesce errors
+      const txHash = await window.ethereum.request({
+        method: 'eth_sendTransaction',
+        params: [{
+          from: address,
+          to: address, // sending to self for mock
+          value: '0x0',
+          data: ethers.hexlify(ethers.toUtf8Bytes(`Vote ${type.toUpperCase()} Prop #${proposalId}`))
+        }],
       });
       
       toast.loading('Transaction submitted. Broadcasting...', { id: toastId });
       
-      await tx.wait();
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      await provider.waitForTransaction(txHash);
       
       toast.dismiss(toastId);
       toast(() => (
         <div className="flex flex-col gap-1">
           <span className="font-semibold text-emerald-400">Vote registered on-chain!</span>
-          <a href={`https://explorer.ritual.net/tx/${tx.hash}`} target="_blank" rel="noreferrer" className="text-xs text-indigo-400 hover:text-indigo-300 flex items-center gap-1 mt-1">
+          <a href={`https://explorer.ritual.net/tx/${txHash}`} target="_blank" rel="noreferrer" className="text-xs text-indigo-400 hover:text-indigo-300 flex items-center gap-1 mt-1">
             View on Ritual Explorer <ExternalLink className="w-3 h-3" />
           </a>
         </div>
