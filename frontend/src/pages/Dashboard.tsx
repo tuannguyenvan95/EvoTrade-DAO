@@ -128,11 +128,12 @@ const Dashboard = () => {
       return;
     }
 
+    let toastId;
     try {
       const provider = new ethers.BrowserProvider(window.ethereum);
       const signer = await provider.getSigner();
       
-      const toastId = toast.loading('Waiting for wallet signature & gas approval...');
+      toastId = toast.loading('Waiting for wallet signature & gas approval...');
       
       // Sending a 0 ETH transaction to the DAO address (using self as mock) to consume actual Gas
       const tx = await signer.sendTransaction({
@@ -168,11 +169,16 @@ const Dashboard = () => {
       }));
 
     } catch (err: any) {
+      console.error("Vote Error:", err);
+      if (toastId) toast.dismiss(toastId);
+      
       if (err.code === 4001 || err.code === 'ACTION_REJECTED') {
         toast.error('Transaction rejected by user.');
+      } else if (err.message && err.message.toLowerCase().includes('insufficient funds')) {
+        toast.error('Insufficient Testnet ETH for Gas!');
       } else {
-        console.error(err);
-        toast.error('Failed to execute transaction.');
+        const errorMsg = err.shortMessage || err.message || 'Failed to execute transaction.';
+        toast.error(`Failed: ${errorMsg}`);
       }
     }
   };
