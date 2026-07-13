@@ -294,38 +294,6 @@ const Dashboard = () => {
       <main className="max-w-7xl mx-auto px-6 py-8 grid grid-cols-1 xl:grid-cols-3 gap-6 items-stretch">
           {/* Left Column: Stats & Allocation */}
           <div className="flex flex-col space-y-6 xl:col-span-1">
-          {/* TEE Enclave Status */}
-          <div className="p-6 rounded-2xl bg-white/5 border border-white/10 relative overflow-hidden flex flex-col">
-            <div className="absolute top-0 right-0 p-4 opacity-10">
-              <Server className="w-24 h-24" />
-            </div>
-            <div className="flex items-center gap-2 text-slate-400 mb-4 relative z-10">
-              <Shield className="w-5 h-5 text-indigo-400" />
-              <h2 className="font-semibold">TEE Enclave Status</h2>
-            </div>
-            <div className="space-y-3 relative z-10">
-              <div className="flex justify-between items-center text-sm">
-                <span className="text-slate-400">Node Status</span>
-                <span className="text-emerald-400 font-medium flex items-center gap-1">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                  Active
-                </span>
-              </div>
-              <div className="flex justify-between items-center text-sm">
-                <span className="text-slate-400">Encryption</span>
-                <span className="text-white font-mono text-xs">AES-256-GCM</span>
-              </div>
-              <div className="flex justify-between items-center text-sm">
-                <span className="text-slate-400">Uptime</span>
-                <span className="text-white font-mono text-xs">99.99%</span>
-              </div>
-              <div className="flex justify-between items-center text-sm">
-                <span className="text-slate-400">Block Height</span>
-                <span className="text-indigo-400 font-mono text-xs">1,842,901</span>
-              </div>
-            </div>
-          </div>
-
           {/* Treasury Stats */}
           <div className="p-6 rounded-2xl bg-white/5 border border-white/10 relative overflow-hidden flex flex-col h-full">
             <div className="flex items-center gap-2 text-slate-400 mb-4 relative z-10">
@@ -408,6 +376,38 @@ const Dashboard = () => {
                   </div>
                 </div>
               ))}
+            </div>
+          </div>
+
+          {/* TEE Enclave Status */}
+          <div className="p-6 rounded-2xl bg-white/5 border border-white/10 relative overflow-hidden flex flex-col">
+            <div className="absolute top-0 right-0 p-4 opacity-10">
+              <Server className="w-24 h-24" />
+            </div>
+            <div className="flex items-center gap-2 text-slate-400 mb-4 relative z-10">
+              <Shield className="w-5 h-5 text-indigo-400" />
+              <h2 className="font-semibold">TEE Enclave Status</h2>
+            </div>
+            <div className="space-y-3 relative z-10">
+              <div className="flex justify-between items-center text-sm">
+                <span className="text-slate-400">Node Status</span>
+                <span className="text-emerald-400 font-medium flex items-center gap-1">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                  Active
+                </span>
+              </div>
+              <div className="flex justify-between items-center text-sm">
+                <span className="text-slate-400">Encryption</span>
+                <span className="text-white font-mono text-xs">AES-256-GCM</span>
+              </div>
+              <div className="flex justify-between items-center text-sm">
+                <span className="text-slate-400">Uptime</span>
+                <span className="text-white font-mono text-xs">99.99%</span>
+              </div>
+              <div className="flex justify-between items-center text-sm">
+                <span className="text-slate-400">Block Height</span>
+                <span className="text-indigo-400 font-mono text-xs">1,842,901</span>
+              </div>
             </div>
           </div>
 

@@ -4,8 +4,8 @@ import { Link } from 'react-router-dom';
 const Footer = () => {
   return (
     <footer className="w-full bg-slate-900 border-t border-white/10 mt-auto">
-      <div className="max-w-7xl mx-auto px-6 pt-12 pb-8">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-4">
+      <div className="max-w-7xl mx-auto px-6 py-12">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
           {/* Brand Col */}
           <div className="col-span-1 md:col-span-1">
             <Link to="/" className="flex items-center gap-2 mb-4 hover:opacity-80 transition-opacity">
@@ -49,15 +49,15 @@ const Footer = () => {
             <h4 className="text-xs font-bold text-slate-500 tracking-wider mb-4 uppercase">Community</h4>
             <ul className="space-y-3 text-sm text-slate-300">
               <li><a href="https://discord.gg/ritual-net" target="_blank" rel="noreferrer" className="hover:text-white transition-colors">Discord</a></li>
+              <li><a href="#" className="hover:text-white transition-colors">Telegram</a></li>
+              <li><a href="#" className="hover:text-white transition-colors">Governance Forum</a></li>
               <li><a href="#" className="hover:text-white transition-colors">Email</a></li>
             </ul>
           </div>
         </div>
-      </div>
 
-      {/* Bottom row */}
-      <div className="border-t border-white/10">
-        <div className="max-w-7xl mx-auto px-6 py-6 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+        {/* Bottom row */}
+        <div className="pt-8 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-slate-500">
           <div>© 2026 EvoTrade DAO. Testnet demo — not financial advice.</div>
           <div className="flex items-center gap-2">
             Powered by Ritual TEE precompiles
