@@ -4,8 +4,8 @@ import { Link } from 'react-router-dom';
 const Footer = () => {
   return (
     <footer className="w-full bg-slate-900 border-t border-white/10 mt-auto">
-      <div className="max-w-7xl mx-auto px-6 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
+      <div className="max-w-7xl mx-auto px-6 pt-12 pb-8">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-4">
           {/* Brand Col */}
           <div className="col-span-1 md:col-span-1">
             <Link to="/" className="flex items-center gap-2 mb-4 hover:opacity-80 transition-opacity">
@@ -53,9 +53,11 @@ const Footer = () => {
             </ul>
           </div>
         </div>
+      </div>
 
-        {/* Bottom row */}
-        <div className="pt-8 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+      {/* Bottom row */}
+      <div className="border-t border-white/10">
+        <div className="max-w-7xl mx-auto px-6 py-6 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-slate-500">
           <div>© 2026 EvoTrade DAO. Testnet demo — not financial advice.</div>
           <div className="flex items-center gap-2">
             Powered by Ritual TEE precompiles
