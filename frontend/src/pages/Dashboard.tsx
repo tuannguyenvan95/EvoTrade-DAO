@@ -532,18 +532,18 @@ const Dashboard = () => {
                 </div>
               ))}
             </div>
-            <form onSubmit={handleTerminalSubmit} className="flex gap-2 p-4 pt-0 border-t border-indigo-500/10 mt-2 bg-white dark:bg-slate-900 text-slate-100/50 items-center">
-              <span className="text-emerald-400 font-mono text-sm mt-1">{'>'}</span>
+            <form onSubmit={handleTerminalSubmit} className="flex gap-2 p-4 border-t border-indigo-500/10 mt-2 bg-white dark:bg-slate-900 text-slate-100/50 items-center">
+              <span className="text-emerald-400 font-mono text-sm">{'>'}</span>
               <input 
                 type="text" 
                 value={terminalInput}
                 onChange={e => setTerminalInput(e.target.value)}
-                className="flex-1 bg-transparent border-none outline-none text-emerald-400 font-mono text-sm placeholder:text-emerald-900/50 mt-1"
+                className="flex-1 bg-transparent border-none outline-none text-emerald-400 font-mono text-sm placeholder:text-emerald-900/50"
                 placeholder="Ask the AI agents about market strategy..."
               />
               <button 
                 type="submit" 
-                className="p-1.5 rounded bg-indigo-500/10 text-indigo-400 hover:bg-indigo-500/20 transition-colors"
+                className="p-1.5 rounded-md bg-indigo-500/10 text-indigo-400 hover:bg-indigo-500/20 transition-colors flex items-center justify-center"
                 title="Send Command"
               >
                 <Send className="w-4 h-4" />
