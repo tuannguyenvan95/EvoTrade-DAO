@@ -117,6 +117,11 @@ const Dashboard = () => {
   }, []);
 
   const connectWallet = async () => {
+    if (address) {
+      setAddress(null);
+      toast.success('Wallet disconnected');
+      return;
+    }
     setIsConnecting(true);
     if (typeof window.ethereum !== 'undefined') {
       try {
@@ -272,11 +277,16 @@ const Dashboard = () => {
 
             <button 
               onClick={connectWallet}
-              disabled={isConnecting}
-              className="px-6 py-2 bg-white text-slate-900 hover:bg-slate-200 rounded-lg text-sm font-bold transition-colors flex items-center gap-2"
+              disabled={isConnecting && !address}
+              className="px-6 py-2 bg-white text-slate-900 hover:bg-slate-200 rounded-lg text-sm font-bold transition-colors flex items-center gap-2 group relative"
             >
               <Wallet className="w-4 h-4" />
-              {address ? `${address.slice(0, 6)}...${address.slice(-4)}` : 'Connect Wallet'}
+              {address ? (
+                <>
+                  <span className="group-hover:hidden">{`${address.slice(0, 6)}...${address.slice(-4)}`}</span>
+                  <span className="hidden group-hover:block text-rose-500">Disconnect</span>
+                </>
+              ) : 'Connect Wallet'}
             </button>
           </div>
         </div>
