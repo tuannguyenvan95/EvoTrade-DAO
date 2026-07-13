@@ -48,7 +48,7 @@ const Footer = () => {
           <div>
             <h4 className="text-xs font-bold text-slate-500 tracking-wider mb-4 uppercase">Community</h4>
             <ul className="space-y-3 text-sm text-slate-300">
-              <li><a href="#" className="hover:text-white transition-colors">Discord</a></li>
+              <li><a href="https://discord.gg/ritual-net" target="_blank" rel="noreferrer" className="hover:text-white transition-colors">Discord</a></li>
               <li><a href="#" className="hover:text-white transition-colors">Email</a></li>
             </ul>
           </div>

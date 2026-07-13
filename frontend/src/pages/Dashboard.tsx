@@ -23,7 +23,9 @@ const MOCK_TVL_DATA = [
 
 const MOCK_PROPOSALS = [
   { id: 1, title: 'Rebalance to 60% ETH / 40% BTC', status: 'Passed', votesFor: 12000, votesAgainst: 300 },
-  { id: 2, title: 'Stake 100 ETH on Lido', status: 'Active', votesFor: 5400, votesAgainst: 2100 }
+  { id: 2, title: 'Stake 100 ETH on Lido', status: 'Active', votesFor: 5400, votesAgainst: 2100 },
+  { id: 3, title: 'Execute Flash Loan Arbitrage on Curve', status: 'Active', votesFor: 8900, votesAgainst: 1200 },
+  { id: 4, title: 'Upgrade TEE Enclave Security Parameters', status: 'Pending', votesFor: 0, votesAgainst: 0 }
 ];
 
 const MOCK_LOGS = [
@@ -92,24 +94,41 @@ const Dashboard = () => {
       return;
     }
 
-    const toastId = toast.loading('Waiting for confirmation...');
-    
-    // Simulate Blockchain Transaction Delay
-    setTimeout(() => {
-      toast.success('Transaction Confirmed! Vote registered.', { id: toastId });
+    try {
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const signer = await provider.getSigner();
       
-      // Update UI Realtime
-      setProposals(prev => prev.map(p => {
-        if (p.id === proposalId) {
-          return {
-            ...p,
-            votesFor: type === 'for' ? p.votesFor + 100 : p.votesFor,
-            votesAgainst: type === 'against' ? p.votesAgainst + 100 : p.votesAgainst
-          };
-        }
-        return p;
-      }));
-    }, 2000);
+      const toastId = toast.loading('Waiting for signature...');
+      
+      // Request signature from wallet
+      await signer.signMessage(`EvoTrade DAO: I am voting ${type.toUpperCase()} for Proposal #${proposalId}.`);
+      
+      toast.loading('Transaction Confirmed. Broadcasting vote...', { id: toastId });
+      
+      // Simulate Blockchain Transaction Delay
+      setTimeout(() => {
+        toast.success('Vote successfully registered on Ritual Chain!', { id: toastId });
+        
+        // Update UI Realtime
+        setProposals(prev => prev.map(p => {
+          if (p.id === proposalId) {
+            return {
+              ...p,
+              votesFor: type === 'for' ? p.votesFor + 1000 : p.votesFor,
+              votesAgainst: type === 'against' ? p.votesAgainst + 1000 : p.votesAgainst
+            };
+          }
+          return p;
+        }));
+      }, 1500);
+
+    } catch (err: any) {
+      if (err.code === 4001) {
+        toast.error('Signature rejected by user.');
+      } else {
+        toast.error('Failed to sign transaction.');
+      }
+    }
   };
 
   const runRandomDemo = () => {
@@ -224,6 +243,32 @@ const Dashboard = () => {
                 </div>
                 <span className="text-purple-400 bg-purple-500/10 px-2 py-0.5 rounded text-xs font-semibold">Active</span>
               </div>
+            </div>
+          </div>
+
+          {/* Top Delegators (Demo) */}
+          <div className="p-6 rounded-2xl bg-white/5 border border-white/10">
+            <div className="flex items-center gap-2 text-slate-400 mb-4">
+              <ShieldCheck className="w-5 h-5 text-indigo-400" />
+              <h2 className="font-semibold">Top Delegators (Demo)</h2>
+            </div>
+            <div className="space-y-3">
+              {[
+                { address: "0x12Fa...9c1A", power: "45,000" },
+                { address: "0x88Bb...3b42", power: "32,500" },
+                { address: "0xAb71...88F0", power: "28,100" },
+                { address: "0x9c33...211E", power: "15,000" }
+              ].map((delegator, i) => (
+                <div key={i} className="flex items-center justify-between text-sm">
+                  <div className="flex items-center gap-2 text-slate-300">
+                    <div className="w-6 h-6 rounded-full bg-gradient-to-br from-indigo-500 to-blue-500 flex items-center justify-center text-[10px] font-bold">
+                      {i + 1}
+                    </div>
+                    <span className="font-mono">{delegator.address}</span>
+                  </div>
+                  <span className="text-emerald-400 font-semibold">{delegator.power} VP</span>
+                </div>
+              ))}
             </div>
           </div>
 
