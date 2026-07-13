@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom';
 import { 
   Bot, LineChart, Wallet, RefreshCw, 
   CheckCircle2, ChevronLeft, ExternalLink, 
-  PieChart as PieChartIcon, Terminal, Activity 
+  PieChart as PieChartIcon, Terminal, Activity,
+  Server, Shield, Trophy
 } from 'lucide-react';
 import { ethers } from 'ethers';
 import toast, { Toaster } from 'react-hot-toast';
@@ -374,6 +375,62 @@ const Dashboard = () => {
                     <span className="text-xs text-slate-500">{exec.time}</span>
                     <a href="#" className="text-xs text-indigo-400 font-mono hover:underline">{exec.id}</a>
                   </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* TEE Enclave Status */}
+          <div className="p-6 rounded-2xl bg-white/5 border border-white/10 relative overflow-hidden">
+            <div className="absolute top-0 right-0 p-4 opacity-10">
+              <Server className="w-24 h-24" />
+            </div>
+            <div className="flex items-center gap-2 text-slate-400 mb-4 relative z-10">
+              <Shield className="w-5 h-5 text-indigo-400" />
+              <h2 className="font-semibold">TEE Enclave Status</h2>
+            </div>
+            <div className="space-y-3 relative z-10">
+              <div className="flex justify-between items-center text-sm">
+                <span className="text-slate-400">Node Status</span>
+                <span className="text-emerald-400 font-medium flex items-center gap-1">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                  Active
+                </span>
+              </div>
+              <div className="flex justify-between items-center text-sm">
+                <span className="text-slate-400">Encryption</span>
+                <span className="text-white font-mono text-xs">AES-256-GCM</span>
+              </div>
+              <div className="flex justify-between items-center text-sm">
+                <span className="text-slate-400">Uptime</span>
+                <span className="text-white font-mono text-xs">99.99%</span>
+              </div>
+              <div className="flex justify-between items-center text-sm">
+                <span className="text-slate-400">Block Height</span>
+                <span className="text-indigo-400 font-mono text-xs">1,842,901</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Governance Leaderboard */}
+          <div className="p-6 rounded-2xl bg-white/5 border border-white/10">
+            <div className="flex items-center gap-2 text-slate-400 mb-4">
+              <Trophy className="w-5 h-5 text-amber-400" />
+              <h2 className="font-semibold">Top Delegators</h2>
+            </div>
+            <div className="space-y-4">
+              {[
+                { address: '0x1A4...8B2', power: '450k', color: 'text-amber-400' },
+                { address: '0x8F2...3C9', power: '320k', color: 'text-slate-300' },
+                { address: '0x3E1...7A5', power: '180k', color: 'text-orange-400' },
+                { address: '0x9D4...2F1', power: '150k', color: 'text-slate-400' },
+              ].map((user, i) => (
+                <div key={i} className="flex items-center justify-between text-sm bg-black/20 p-2 rounded-lg">
+                  <div className="flex items-center gap-3">
+                    <span className={`font-bold ${user.color}`}>#{i + 1}</span>
+                    <span className="text-slate-300 font-mono">{user.address}</span>
+                  </div>
+                  <span className="text-indigo-400 font-semibold">{user.power} VP</span>
                 </div>
               ))}
             </div>
