@@ -61,7 +61,13 @@ const Dashboard = () => {
   const [isConnecting, setIsConnecting] = useState(false);
   const [proposals, setProposals] = useState(MOCK_PROPOSALS);
   const [activeTab, setActiveTab] = useState<'active' | 'history'>('active');
-  const [voteHistory, setVoteHistory] = useState<{id: number, type: 'for' | 'against', title: string, txHash: string}[]>([]);
+  const [voteHistory, setVoteHistory] = useState<{id: number, type: 'for' | 'against', title: string, txHash: string}[]>(() => {
+    const saved = localStorage.getItem('evotrade_vote_history');
+    if (saved) {
+      try { return JSON.parse(saved); } catch (e) { return []; }
+    }
+    return [];
+  });
   const [isDemoRunning, setIsDemoRunning] = useState(false);
   const [cryptoPrices, setCryptoPrices] = useState<any>({});
 
@@ -70,6 +76,11 @@ const Dashboard = () => {
   const [terminalLogs, setTerminalLogs] = useState([
     { sender: 'system', text: 'EvoTrade AI Core v2.0 initialized. TEE secured. Ready for queries.' }
   ]);
+
+  // Persist vote history
+  useEffect(() => {
+    localStorage.setItem('evotrade_vote_history', JSON.stringify(voteHistory));
+  }, [voteHistory]);
 
   // Auto connect or Read-only setup + Polling crypto prices
   useEffect(() => {
