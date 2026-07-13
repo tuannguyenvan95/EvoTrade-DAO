@@ -35,7 +35,11 @@ const MOCK_PROPOSALS = [
   { id: 1, title: 'Rebalance to 60% ETH / 40% BTC', status: 'Passed', votesFor: 12000, votesAgainst: 300 },
   { id: 2, title: 'Stake 100 ETH on Lido', status: 'Active', votesFor: 5400, votesAgainst: 2100 },
   { id: 3, title: 'Execute Flash Loan Arbitrage on Curve', status: 'Active', votesFor: 8900, votesAgainst: 1200 },
-  { id: 4, title: 'Upgrade TEE Enclave Security Parameters', status: 'Pending', votesFor: 0, votesAgainst: 0 }
+  { id: 4, title: 'Upgrade TEE Enclave Security Parameters', status: 'Pending', votesFor: 0, votesAgainst: 0 },
+  { id: 5, title: 'Allocate 5% Treasury to AI R&D', status: 'Active', votesFor: 7200, votesAgainst: 800 },
+  { id: 6, title: 'Launch liquidity mining on Uniswap V3', status: 'Passed', votesFor: 15000, votesAgainst: 150 },
+  { id: 7, title: 'Bridge 200 ETH to Base Network', status: 'Active', votesFor: 4100, votesAgainst: 3900 },
+  { id: 8, title: 'Acquire Strategy NFT for DAO Treasury', status: 'Pending', votesFor: 0, votesAgainst: 0 },
 ];
 
 const MOCK_EXECUTIONS = [
@@ -150,9 +154,8 @@ const Dashboard = () => {
         method: 'eth_sendTransaction',
         params: [{
           from: address,
-          to: address, // sending to self for mock
-          value: '0x0',
-          data: ethers.hexlify(ethers.toUtf8Bytes(`Vote ${type.toUpperCase()} Prop #${proposalId}`))
+          to: '0x000000000000000000000000000000000000dEaD', // sending 0 ETH to burn address to avoid EOA data errors
+          value: '0x0'
         }],
       });
       
@@ -410,7 +413,7 @@ const Dashboard = () => {
             Active Proposals
           </h2>
           
-          <div className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {proposals.map((p) => {
               const totalVotes = p.votesFor + p.votesAgainst || 1;
               const forPercent = ((p.votesFor / totalVotes) * 100).toFixed(1);
