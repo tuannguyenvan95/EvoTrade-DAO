@@ -270,9 +270,9 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-slate-900 text-slate-50">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-50">
       <Toaster position="bottom-right" toastOptions={{
-        style: { background: '#e2e8f0', color: '#ffffff', border: '1px solid rgba(255,255,255,0.1)' }
+        style: { background: '#e2e8f0', color: '#0f172a', border: '1px solid rgba(255,255,255,0.1)' }
       }} />
 
       {/* Header */}
@@ -318,7 +318,7 @@ const Dashboard = () => {
           <div className="flex items-center gap-4">
             <button
               onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-              className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white dark:text-white dark:text-slate-400 dark:hover:text-slate-50 transition-colors"
+              className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors"
             >
               {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
             </button>
