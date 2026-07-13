@@ -1,13 +1,14 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { 
-  Bot, LineChart, Wallet, RefreshCw, 
+  Bot, LineChart, Wallet, 
   CheckCircle2, ChevronLeft, ExternalLink, 
   PieChart as PieChartIcon, Terminal, Activity,
   Server, Shield, Trophy
 } from 'lucide-react';
 import { ethers } from 'ethers';
 import toast, { Toaster } from 'react-hot-toast';
+import { RitualLogo } from '../components/RitualLogo';
 import { AreaChart, Area, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 
 declare global {
@@ -314,8 +315,11 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-6 py-8 grid grid-cols-1 xl:grid-cols-3 gap-6 items-stretch">
+      <div className="max-w-7xl mx-auto px-6 py-8 relative">
+        <RitualLogo className="absolute top-40 right-40 w-[600px] h-[600px] text-indigo-500/5 pointer-events-none -rotate-12" />
+        
+        {/* Main Content */}
+        <main className="grid grid-cols-1 xl:grid-cols-3 gap-6 items-stretch relative z-10">
           {/* Left Column: Stats & Allocation */}
           <div className="flex flex-col space-y-6 xl:col-span-1">
           {/* TEE Enclave Status */}
@@ -498,11 +502,11 @@ const Dashboard = () => {
             <div className="flex items-center gap-3">
               <button 
                 onClick={runRandomDemo}
-                disabled={isDemoRunning}
-                className="px-4 py-2 bg-indigo-50 text-indigo-600 border border-indigo-200 hover:bg-indigo-100 rounded-full text-sm font-semibold transition-colors flex items-center gap-2 disabled:opacity-50"
+                disabled={isDemoRunning || !address}
+                className="px-6 py-3 bg-indigo-50 text-indigo-600 hover:bg-indigo-100 rounded-xl text-sm font-bold transition-colors flex items-center justify-center gap-2 flex-1"
               >
-                <RefreshCw className={`w-4 h-4 ${isDemoRunning ? 'animate-spin' : ''}`} />
-                Random Demo
+                <RitualLogo className={`w-4 h-4 ${isDemoRunning ? 'animate-spin' : ''}`} />
+                {isDemoRunning ? 'Running TEE Demo...' : 'Random Demo Action'}
               </button>
               <div className="flex gap-2 ml-2 pl-4 border-l border-slate-200">
                 <button
@@ -608,6 +612,7 @@ const Dashboard = () => {
         </div>
 
       </main>
+      </div>
     </div>
   );
 };
