@@ -329,31 +329,6 @@ const Dashboard = () => {
             </div>
           </div>
 
-          {/* Treasury Stats */}
-          <div className="p-6 rounded-2xl bg-white shadow-sm border border-slate-200 relative overflow-hidden flex flex-col h-full">
-            <div className="flex items-center gap-2 text-slate-500 mb-4 relative z-10">
-              <LineChart className="w-5 h-5" />
-              <h2 className="font-semibold">Treasury TVL</h2>
-            </div>
-            <div className="text-4xl font-extrabold text-slate-900 mb-2 relative z-10">$1.24M</div>
-            <div className="text-sm text-emerald-400 flex items-center gap-1 mb-4 relative z-10">
-              <CheckCircle2 className="w-4 h-4" /> +5.2% this week (AI Managed)
-            </div>
-            <div className="h-24 -mx-6 -mb-6 mt-auto">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={MOCK_TVL_DATA}>
-                  <defs>
-                    <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#6366f1" stopOpacity={0.3}/>
-                      <stop offset="95%" stopColor="#6366f1" stopOpacity={0}/>
-                    </linearGradient>
-                  </defs>
-                  <Tooltip contentStyle={{ backgroundColor: '#ffffff', borderColor: '#e2e8f0', borderRadius: '8px' }} />
-                  <Area type="monotone" dataKey="value" stroke="#6366f1" strokeWidth={2} fillOpacity={1} fill="url(#colorValue)" />
-                </AreaChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
 
           {/* Treasury Allocation (Pie Chart) */}
           <div className="p-6 rounded-2xl bg-white shadow-sm border border-slate-200 flex flex-col">
@@ -436,6 +411,32 @@ const Dashboard = () => {
                   <span className="text-indigo-400 font-semibold">{user.power} VP</span>
                 </div>
               ))}
+            </div>
+          </div>
+
+          {/* Treasury Stats */}
+          <div className="p-6 rounded-2xl bg-white shadow-sm border border-slate-200 relative overflow-hidden flex flex-col h-full">
+            <div className="flex items-center gap-2 text-slate-500 mb-4 relative z-10">
+              <LineChart className="w-5 h-5" />
+              <h2 className="font-semibold">Treasury TVL</h2>
+            </div>
+            <div className="text-4xl font-extrabold text-slate-900 mb-2 relative z-10">$1.24M</div>
+            <div className="text-sm text-emerald-400 flex items-center gap-1 mb-4 relative z-10">
+              <CheckCircle2 className="w-4 h-4" /> +5.2% this week (AI Managed)
+            </div>
+            <div className="h-24 -mx-6 -mb-6 mt-auto">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={MOCK_TVL_DATA}>
+                  <defs>
+                    <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#6366f1" stopOpacity={0.3}/>
+                      <stop offset="95%" stopColor="#6366f1" stopOpacity={0}/>
+                    </linearGradient>
+                  </defs>
+                  <Tooltip contentStyle={{ backgroundColor: '#ffffff', borderColor: '#e2e8f0', borderRadius: '8px' }} />
+                  <Area type="monotone" dataKey="value" stroke="#6366f1" strokeWidth={2} fillOpacity={1} fill="url(#colorValue)" />
+                </AreaChart>
+              </ResponsiveContainer>
             </div>
           </div>
         </div>

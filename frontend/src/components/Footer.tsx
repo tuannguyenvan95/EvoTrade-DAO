@@ -5,9 +5,9 @@ const Footer = () => {
   return (
     <footer className="w-full bg-white border-t border-slate-200 mt-auto">
       <div className="max-w-7xl mx-auto px-6 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-8 mb-12">
           {/* Brand Col */}
-          <div className="col-span-1 md:col-span-1">
+          <div className="col-span-1 md:col-span-2 pr-8">
             <Link to="/" className="flex items-center gap-2 mb-4 hover:opacity-80 transition-opacity">
               <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center shadow-lg shadow-indigo-500/20">
                 <Bot className="w-5 h-5 text-slate-900" />
