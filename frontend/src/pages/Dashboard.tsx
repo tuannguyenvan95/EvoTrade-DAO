@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { 
+import {
   Bot, LineChart, Wallet, 
   CheckCircle2, ChevronLeft, ExternalLink, 
   PieChart as PieChartIcon, Terminal, Activity,
-  Server, Shield, Trophy
+  Server, Shield, Trophy, Search
 } from 'lucide-react';
 import { ethers } from 'ethers';
 import toast, { Toaster } from 'react-hot-toast';
@@ -273,6 +273,31 @@ const Dashboard = () => {
               </span>
             </div>
           </Link>
+
+          {/* Middle Section: Search & AI Status */}
+          <div className="hidden lg:flex flex-1 items-center justify-center gap-8 px-12">
+            <div className="relative w-full max-w-md group">
+              <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+                <Search className="w-4 h-4 text-slate-400 group-focus-within:text-indigo-500 transition-colors" />
+              </div>
+              <input 
+                type="text" 
+                placeholder="Search proposals, agents, or TXs..." 
+                className="w-full bg-slate-100/50 border border-slate-200 text-slate-900 text-sm rounded-xl pl-10 pr-12 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500/50 transition-all placeholder:text-slate-400"
+              />
+              <div className="absolute inset-y-0 right-2 flex items-center pointer-events-none">
+                <span className="text-[10px] font-mono text-slate-400 border border-slate-200 rounded px-1.5 py-0.5 bg-white shadow-sm">⌘K</span>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-100 rounded-lg px-3 py-1.5 shrink-0">
+              <div className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+              </div>
+              <span className="text-xs font-semibold text-emerald-700">AI: Bullish</span>
+            </div>
+          </div>
 
           <div className="flex items-center gap-4">
 
