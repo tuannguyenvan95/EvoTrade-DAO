@@ -1,9 +1,13 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Bot, LineChart, Wallet, ShieldCheck, Cpu, RefreshCw, CheckCircle2, ChevronLeft, Database, ExternalLink } from 'lucide-react';
+import { 
+  Bot, LineChart, Wallet, RefreshCw, 
+  CheckCircle2, ChevronLeft, ExternalLink, 
+  PieChart as PieChartIcon, Terminal, Activity 
+} from 'lucide-react';
 import { ethers } from 'ethers';
 import toast, { Toaster } from 'react-hot-toast';
-import { AreaChart, Area, Tooltip, ResponsiveContainer } from 'recharts';
+import { AreaChart, Area, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 
 declare global {
   interface Window {
@@ -21,6 +25,12 @@ const MOCK_TVL_DATA = [
   { name: 'Sun', value: 1240000 },
 ];
 
+const ASSET_ALLOCATION = [
+  { name: 'ETH', value: 60, color: '#6366f1' },
+  { name: 'BTC', value: 30, color: '#f59e0b' },
+  { name: 'USDC', value: 10, color: '#10b981' }
+];
+
 const MOCK_PROPOSALS = [
   { id: 1, title: 'Rebalance to 60% ETH / 40% BTC', status: 'Passed', votesFor: 12000, votesAgainst: 300 },
   { id: 2, title: 'Stake 100 ETH on Lido', status: 'Active', votesFor: 5400, votesAgainst: 2100 },
@@ -28,11 +38,10 @@ const MOCK_PROPOSALS = [
   { id: 4, title: 'Upgrade TEE Enclave Security Parameters', status: 'Pending', votesFor: 0, votesAgainst: 0 }
 ];
 
-const MOCK_LOGS = [
-  "Agent Alpha (LLM): Market shows bullish divergence on RSI. Recommend LONG ETH.",
-  "Agent Beta (LLM): Agree, but macro indicators suggest volatility. Hedge with 10% USDC.",
-  "Consensus Reached inside TEE: Rebalance to 60% ETH, 30% BTC, 10% USDC.",
-  "Proposal Generated and Sent to DAO."
+const MOCK_EXECUTIONS = [
+  { id: '0xabc...123', action: 'Swap 150 ETH to USDC on Uniswap V3', time: '5 mins ago' },
+  { id: '0xdef...456', action: 'Stake 500 ETH in Lido', time: '2 hours ago' },
+  { id: '0x789...cde', action: 'Rebalance Portfolio (Prop #1)', time: '1 day ago' },
 ];
 
 const COIN_IDS = 'bitcoin,ethereum,tether,binancecoin,solana,ripple,dogecoin,cardano,avalanche-2,uniswap,chainlink,polkadot';
@@ -49,7 +58,13 @@ const Dashboard = () => {
   const [isDemoRunning, setIsDemoRunning] = useState(false);
   const [cryptoPrices, setCryptoPrices] = useState<any>({});
 
-  // Auto connect or Read-only setup
+  // AI Terminal state
+  const [terminalInput, setTerminalInput] = useState('');
+  const [terminalLogs, setTerminalLogs] = useState([
+    { sender: 'system', text: 'EvoTrade AI Core v2.0 initialized. TEE secured. Ready for queries.' }
+  ]);
+
+  // Auto connect or Read-only setup + Polling crypto prices
   useEffect(() => {
     const setupProvider = async () => {
       // Initialize Read-Only Provider for Ritual Testnet
@@ -58,11 +73,16 @@ const Dashboard = () => {
     };
     setupProvider();
 
-    // Fetch live prices from CoinGecko
-    fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${COIN_IDS}&vs_currencies=usd&include_24hr_change=true`)
-      .then(res => res.json())
-      .then(data => setCryptoPrices(data))
-      .catch(console.error);
+    const fetchPrices = () => {
+      fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${COIN_IDS}&vs_currencies=usd&include_24hr_change=true`)
+        .then(res => res.json())
+        .then(data => setCryptoPrices(data))
+        .catch(console.error);
+    };
+    
+    fetchPrices(); // initial fetch
+    const interval = setInterval(fetchPrices, 30000); // Poll every 30s
+    return () => clearInterval(interval);
   }, []);
 
   const connectWallet = async () => {
@@ -112,45 +132,65 @@ const Dashboard = () => {
       const provider = new ethers.BrowserProvider(window.ethereum);
       const signer = await provider.getSigner();
       
-      const toastId = toast.loading('Waiting for signature...');
+      const toastId = toast.loading('Waiting for wallet signature & gas approval...');
       
-      // Request signature from wallet
-      await signer.signMessage(`EvoTrade DAO: I am voting ${type.toUpperCase()} for Proposal #${proposalId}.`);
+      // Sending a 0 ETH transaction to the DAO address (using self as mock) to consume actual Gas
+      const tx = await signer.sendTransaction({
+        to: address,
+        value: 0,
+        data: ethers.hexlify(ethers.toUtf8Bytes(`Vote ${type.toUpperCase()} Prop #${proposalId}`))
+      });
       
-      toast.loading('Transaction Confirmed. Broadcasting vote...', { id: toastId });
+      toast.loading('Transaction submitted. Broadcasting...', { id: toastId });
       
-      // Simulate Blockchain Transaction Delay
-      setTimeout(() => {
-        toast.dismiss(toastId);
-        toast(() => (
-          <div className="flex flex-col gap-1">
-            <span className="font-semibold text-emerald-400">Vote successfully registered!</span>
-            <a href="https://explorer.ritual.net" target="_blank" rel="noreferrer" className="text-xs text-indigo-400 hover:text-indigo-300 flex items-center gap-1 mt-1">
-              View on Ritual Explorer <ExternalLink className="w-3 h-3" />
-            </a>
-          </div>
-        ), { duration: 5000, style: { background: '#1e293b', color: '#fff', border: '1px solid rgba(255,255,255,0.1)' } });
-        
-        // Update UI Realtime
-        setProposals(prev => prev.map(p => {
-          if (p.id === proposalId) {
-            return {
-              ...p,
-              votesFor: type === 'for' ? p.votesFor + 1000 : p.votesFor,
-              votesAgainst: type === 'against' ? p.votesAgainst + 1000 : p.votesAgainst
-            };
-          }
-          return p;
-        }));
-      }, 1500);
+      await tx.wait(); // Wait for blockchain confirmation
+      
+      toast.dismiss(toastId);
+      toast(() => (
+        <div className="flex flex-col gap-1">
+          <span className="font-semibold text-emerald-400">Vote registered on-chain!</span>
+          <a href={`https://explorer.ritual.net/tx/${tx.hash}`} target="_blank" rel="noreferrer" className="text-xs text-indigo-400 hover:text-indigo-300 flex items-center gap-1 mt-1">
+            View on Ritual Explorer <ExternalLink className="w-3 h-3" />
+          </a>
+        </div>
+      ), { duration: 5000, style: { background: '#1e293b', color: '#fff', border: '1px solid rgba(255,255,255,0.1)' } });
+      
+      // Update UI Realtime
+      setProposals(prev => prev.map(p => {
+        if (p.id === proposalId) {
+          return {
+            ...p,
+            votesFor: type === 'for' ? p.votesFor + 1000 : p.votesFor,
+            votesAgainst: type === 'against' ? p.votesAgainst + 1000 : p.votesAgainst
+          };
+        }
+        return p;
+      }));
 
     } catch (err: any) {
-      if (err.code === 4001) {
-        toast.error('Signature rejected by user.');
+      if (err.code === 4001 || err.code === 'ACTION_REJECTED') {
+        toast.error('Transaction rejected by user.');
       } else {
-        toast.error('Failed to sign transaction.');
+        console.error(err);
+        toast.error('Failed to execute transaction.');
       }
     }
+  };
+
+  const handleTerminalSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!terminalInput.trim()) return;
+    
+    const query = terminalInput;
+    setTerminalLogs(prev => [...prev, { sender: 'user', text: query }]);
+    setTerminalInput('');
+    
+    setTimeout(() => {
+      setTerminalLogs(prev => [...prev, { 
+        sender: 'ai', 
+        text: `Analyzing "${query}"... Market sentiment is neutral. The TEE currently recommends holding the 60/30/10 allocation strategy.` 
+      }]);
+    }, 1200);
   };
 
   const runRandomDemo = () => {
@@ -207,12 +247,10 @@ const Dashboard = () => {
 
       {/* Live Crypto Ticker (Marquee) */}
       <div className="w-full bg-slate-900 border-b border-white/5 py-2 overflow-hidden relative flex items-center group">
-        {/* Fade edges */}
         <div className="absolute left-0 top-0 bottom-0 w-20 bg-gradient-to-r from-slate-900 to-transparent z-10 pointer-events-none" />
         <div className="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-slate-900 to-transparent z-10 pointer-events-none" />
         
         <div className="flex w-max animate-marquee group-hover:[animation-play-state:paused]">
-          {/* Render list twice to create an infinite loop effect */}
           {[1, 2].map((loopIndex) => (
             <div key={loopIndex} className="flex gap-12 px-6">
               {Object.entries(cryptoPrices).map(([id, data]: [string, any]) => (
@@ -230,10 +268,10 @@ const Dashboard = () => {
       </div>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-6 py-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <main className="max-w-7xl mx-auto px-6 py-8 grid grid-cols-1 xl:grid-cols-3 gap-8">
         
-        {/* Left Column: Stats & Logs */}
-        <div className="space-y-8 lg:col-span-1">
+        {/* Left Column: Stats & Allocation */}
+        <div className="space-y-6 xl:col-span-1">
           {/* Treasury Stats */}
           <div className="p-6 rounded-2xl bg-white/5 border border-white/10 relative overflow-hidden">
             <div className="flex items-center gap-2 text-slate-400 mb-4 relative z-10">
@@ -244,7 +282,6 @@ const Dashboard = () => {
             <div className="text-sm text-emerald-400 flex items-center gap-1 mb-4 relative z-10">
               <CheckCircle2 className="w-4 h-4" /> +5.2% this week (AI Managed)
             </div>
-            {/* Added TVL Chart from features request */}
             <div className="h-24 -mx-6 -mb-6">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={MOCK_TVL_DATA}>
@@ -261,86 +298,96 @@ const Dashboard = () => {
             </div>
           </div>
 
-          {/* AI Agents Status (Added from features request) */}
+          {/* Treasury Allocation (Pie Chart) */}
           <div className="p-6 rounded-2xl bg-white/5 border border-white/10">
             <div className="flex items-center gap-2 text-slate-400 mb-4">
-              <Database className="w-5 h-5 text-purple-400" />
-              <h2 className="font-semibold">Agent Fleet Status</h2>
+              <PieChartIcon className="w-5 h-5 text-amber-400" />
+              <h2 className="font-semibold">Asset Allocation</h2>
             </div>
-            <div className="space-y-3">
-              <div className="flex items-center justify-between text-sm">
-                <div className="flex items-center gap-2 text-slate-300">
-                  <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                  Alpha (Sentiment)
-                </div>
-                <span className="text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded text-xs font-semibold">Bullish</span>
-              </div>
-              <div className="flex items-center justify-between text-sm">
-                <div className="flex items-center gap-2 text-slate-300">
-                  <div className="w-2 h-2 rounded-full bg-blue-400 animate-pulse" />
-                  Beta (Risk/Macro)
-                </div>
-                <span className="text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded text-xs font-semibold">Neutral</span>
-              </div>
-              <div className="flex items-center justify-between text-sm">
-                <div className="flex items-center gap-2 text-slate-300">
-                  <div className="w-2 h-2 rounded-full bg-purple-400 animate-pulse" />
-                  Gamma (Quant)
-                </div>
-                <span className="text-purple-400 bg-purple-500/10 px-2 py-0.5 rounded text-xs font-semibold">Active</span>
-              </div>
+            <div className="h-40 flex items-center justify-center">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={ASSET_ALLOCATION}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={45}
+                    outerRadius={70}
+                    paddingAngle={5}
+                    dataKey="value"
+                    stroke="none"
+                  >
+                    {ASSET_ALLOCATION.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip 
+                    contentStyle={{ backgroundColor: '#0f172a', borderColor: '#1e293b', borderRadius: '8px' }} 
+                    itemStyle={{ color: '#fff' }}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
             </div>
-          </div>
-
-          {/* Top Delegators (Demo) */}
-          <div id="leaderboard" className="p-6 rounded-2xl bg-white/5 border border-white/10 scroll-mt-24">
-            <div className="flex items-center gap-2 text-slate-400 mb-4">
-              <ShieldCheck className="w-5 h-5 text-indigo-400" />
-              <h2 className="font-semibold">Top Delegators (Demo)</h2>
-            </div>
-            <div className="space-y-3">
-              {[
-                { address: "0x12Fa...9c1A", power: "45,000" },
-                { address: "0x88Bb...3b42", power: "32,500" },
-                { address: "0xAb71...88F0", power: "28,100" },
-                { address: "0x9c33...211E", power: "15,000" }
-              ].map((delegator, i) => (
-                <div key={i} className="flex items-center justify-between text-sm">
-                  <div className="flex items-center gap-2 text-slate-300">
-                    <div className="w-6 h-6 rounded-full bg-gradient-to-br from-indigo-500 to-blue-500 flex items-center justify-center text-[10px] font-bold">
-                      {i + 1}
-                    </div>
-                    <span className="font-mono">{delegator.address}</span>
-                  </div>
-                  <span className="text-emerald-400 font-semibold">{delegator.power} VP</span>
+            <div className="flex justify-center gap-4 text-xs font-semibold mt-2">
+              {ASSET_ALLOCATION.map(asset => (
+                <div key={asset.name} className="flex items-center gap-1">
+                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: asset.color }} />
+                  <span className="text-slate-300">{asset.name} {asset.value}%</span>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* TEE Agent Logs */}
-          <div className="p-6 rounded-2xl bg-slate-950 border border-indigo-500/20 relative overflow-hidden">
-            <div className="absolute top-0 right-0 p-4 opacity-10">
-              <ShieldCheck className="w-24 h-24 text-indigo-500" />
+          {/* Execution History */}
+          <div className="p-6 rounded-2xl bg-white/5 border border-white/10">
+            <div className="flex items-center gap-2 text-slate-400 mb-4">
+              <Activity className="w-5 h-5 text-emerald-400" />
+              <h2 className="font-semibold">Execution History (Live)</h2>
             </div>
-            <div className="flex items-center gap-2 text-indigo-400 mb-6 relative z-10">
-              <Cpu className="w-5 h-5" />
-              <h2 className="font-semibold">TEE Debate Logs (Live)</h2>
-            </div>
-            <div className="space-y-4 relative z-10 font-mono text-xs">
-              {MOCK_LOGS.map((log, i) => (
-                <div key={i} className="flex gap-3 text-slate-300">
-                  <span className="text-indigo-500 shrink-0">[{new Date().toISOString().split('T')[1].slice(0,8)}]</span>
-                  <span>{log}</span>
+            <div className="space-y-4">
+              {MOCK_EXECUTIONS.map((exec, i) => (
+                <div key={i} className="flex flex-col gap-1 text-sm border-b border-white/5 pb-3 last:border-0 last:pb-0">
+                  <div className="text-slate-300 font-medium">{exec.action}</div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-slate-500">{exec.time}</span>
+                    <a href="#" className="text-xs text-indigo-400 font-mono hover:underline">{exec.id}</a>
+                  </div>
                 </div>
               ))}
             </div>
           </div>
         </div>
 
-        {/* Right Column: Proposals */}
-        <div className="lg:col-span-2 space-y-6">
-          <h2 className="text-2xl font-bold text-white flex items-center gap-2">
+        {/* Center/Right Column: Proposals & AI Interaction */}
+        <div className="xl:col-span-2 space-y-6">
+          
+          {/* AI Agent Terminal (Interactive) */}
+          <div className="rounded-2xl bg-black border border-indigo-500/30 flex flex-col h-64 overflow-hidden shadow-[0_0_15px_rgba(99,102,241,0.1)]">
+            <div className="bg-slate-900/80 px-4 py-2 border-b border-indigo-500/20 flex items-center gap-2">
+              <Terminal className="w-4 h-4 text-indigo-400" />
+              <span className="text-xs font-semibold text-slate-400 tracking-wider">AI AGENT TEE TERMINAL</span>
+            </div>
+            <div className="flex-1 p-4 overflow-y-auto font-mono text-xs space-y-2 flex flex-col justify-end">
+              {terminalLogs.map((log, i) => (
+                <div key={i} className={`flex gap-3 ${log.sender === 'user' ? 'text-emerald-400' : log.sender === 'system' ? 'text-slate-500' : 'text-indigo-300'}`}>
+                  <span className="shrink-0">{log.sender === 'user' ? '>' : log.sender === 'system' ? '#' : 'Agent:'}</span>
+                  <span className="break-words leading-relaxed">{log.text}</span>
+                </div>
+              ))}
+            </div>
+            <form onSubmit={handleTerminalSubmit} className="flex gap-2 p-4 pt-0 border-t border-indigo-500/10 mt-2 bg-black/50">
+              <span className="text-emerald-400 font-mono text-sm mt-1">{'>'}</span>
+              <input 
+                type="text" 
+                value={terminalInput}
+                onChange={e => setTerminalInput(e.target.value)}
+                className="flex-1 bg-transparent border-none outline-none text-emerald-400 font-mono text-sm placeholder:text-emerald-900/50"
+                placeholder="Ask the AI agents about market strategy..."
+              />
+            </form>
+          </div>
+
+          <h2 className="text-2xl font-bold text-white flex items-center gap-2 pt-2">
             Active Proposals
           </h2>
           
@@ -356,13 +403,13 @@ const Dashboard = () => {
                     <div>
                       <div className="flex items-center gap-3 mb-2">
                         <span className="text-sm text-slate-400">ID: #{p.id}</span>
-                        <span className={`px-2 py-1 rounded text-xs font-semibold ${p.status === 'Active' ? 'bg-blue-500/20 text-blue-400' : 'bg-emerald-500/20 text-emerald-400'}`}>
+                        <span className={`px-2 py-1 rounded text-xs font-semibold ${p.status === 'Active' ? 'bg-blue-500/20 text-blue-400' : p.status === 'Passed' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400'}`}>
                           {p.status}
                         </span>
                       </div>
                       <h3 className="text-xl font-semibold text-white">{p.title}</h3>
                     </div>
-                    {/* Replaced single button with interactive Vote buttons */}
+                    {/* Interactive Vote buttons calling Send Transaction */}
                     <div className="flex items-center gap-2 shrink-0">
                       <button 
                         onClick={() => handleVote(p.id, 'for')}
@@ -394,6 +441,7 @@ const Dashboard = () => {
               );
             })}
           </div>
+
         </div>
 
       </main>
