@@ -6,7 +6,7 @@ import Footer from './components/Footer';
 function App() {
   return (
     <Router>
-      <div className="min-h-screen bg-slate-900 text-slate-100 font-sans selection:bg-indigo-500/30 flex flex-col">
+      <div className="min-h-screen bg-white text-slate-100 font-sans selection:bg-indigo-500/30 flex flex-col">
         <main className="flex-1">
           <Routes>
             <Route path="/" element={<Landing />} />

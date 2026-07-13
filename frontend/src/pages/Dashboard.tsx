@@ -173,7 +173,7 @@ const Dashboard = () => {
             View on Ritual Explorer <ExternalLink className="w-3 h-3" />
           </a>
         </div>
-      ), { duration: 5000, style: { background: '#1e293b', color: '#fff', border: '1px solid rgba(255,255,255,0.1)' } });
+      ), { duration: 5000, style: { background: '#e2e8f0', color: '#ffffff', border: '1px solid rgba(255,255,255,0.1)' } });
       
       // Update UI Realtime
       setProposals(prev => prev.map(p => {
@@ -227,21 +227,21 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-900 text-slate-50">
+    <div className="min-h-screen bg-white text-slate-50">
       <Toaster position="bottom-right" toastOptions={{
-        style: { background: '#1e293b', color: '#fff', border: '1px solid rgba(255,255,255,0.1)' }
+        style: { background: '#e2e8f0', color: '#ffffff', border: '1px solid rgba(255,255,255,0.1)' }
       }} />
 
       {/* Header */}
-      <header className="border-b border-white/10 bg-slate-900/50 backdrop-blur-md sticky top-0 z-50">
+      <header className="border-b border-slate-200 bg-white shadow-sm0 backdrop-blur-md sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
             <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-blue-500 rounded-lg flex items-center justify-center">
-              <Bot className="w-5 h-5 text-white" />
+              <Bot className="w-5 h-5 text-slate-900" />
             </div>
             <div className="flex flex-col">
-              <span className="text-xl font-bold text-white">Dashboard</span>
-              <span className="text-[10px] text-slate-400 font-medium flex items-center gap-1">
+              <span className="text-xl font-bold text-slate-900">Dashboard</span>
+              <span className="text-[10px] text-slate-500 font-medium flex items-center gap-1">
                 <ChevronLeft className="w-3 h-3" /> Back to Home
               </span>
             </div>
@@ -269,7 +269,7 @@ const Dashboard = () => {
       </header>
 
       {/* Live Crypto Ticker (Marquee) */}
-      <div className="w-full bg-slate-900 border-b border-white/5 py-2 overflow-hidden relative flex items-center group">
+      <div className="w-full bg-white border-b border-slate-100 py-2 overflow-hidden relative flex items-center group">
         <div className="absolute left-0 top-0 bottom-0 w-20 bg-gradient-to-r from-slate-900 to-transparent z-10 pointer-events-none" />
         <div className="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-slate-900 to-transparent z-10 pointer-events-none" />
         
@@ -278,8 +278,8 @@ const Dashboard = () => {
             <div key={loopIndex} className="flex gap-12 px-6">
               {Object.entries(cryptoPrices).map(([id, data]: [string, any]) => (
                 <div key={`${loopIndex}-${id}`} className="flex items-center gap-2 text-xs font-mono shrink-0">
-                  <span className="text-slate-400 font-bold">{COIN_SYMBOLS[id]}</span>
-                  <span className="text-white">${data?.usd?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 4 }) || '---'}</span>
+                  <span className="text-slate-500 font-bold">{COIN_SYMBOLS[id]}</span>
+                  <span className="text-slate-900">${data?.usd?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 4 }) || '---'}</span>
                   <span className={data?.usd_24h_change >= 0 ? "text-emerald-400" : "text-red-400"}>
                     {data?.usd_24h_change > 0 ? '+' : ''}{data?.usd_24h_change?.toFixed(2)}%
                   </span>
@@ -294,13 +294,45 @@ const Dashboard = () => {
       <main className="max-w-7xl mx-auto px-6 py-8 grid grid-cols-1 xl:grid-cols-3 gap-6 items-stretch">
           {/* Left Column: Stats & Allocation */}
           <div className="flex flex-col space-y-6 xl:col-span-1">
+          {/* TEE Enclave Status */}
+          <div className="p-6 rounded-2xl bg-white shadow-sm border border-slate-200 relative overflow-hidden flex flex-col">
+            <div className="absolute top-0 right-0 p-4 opacity-10">
+              <Server className="w-24 h-24" />
+            </div>
+            <div className="flex items-center gap-2 text-slate-500 mb-4 relative z-10">
+              <Shield className="w-5 h-5 text-indigo-400" />
+              <h2 className="font-semibold">TEE Enclave Status</h2>
+            </div>
+            <div className="space-y-3 relative z-10">
+              <div className="flex justify-between items-center text-sm">
+                <span className="text-slate-500">Node Status</span>
+                <span className="text-emerald-400 font-medium flex items-center gap-1">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                  Active
+                </span>
+              </div>
+              <div className="flex justify-between items-center text-sm">
+                <span className="text-slate-500">Encryption</span>
+                <span className="text-slate-900 font-mono text-xs">AES-256-GCM</span>
+              </div>
+              <div className="flex justify-between items-center text-sm">
+                <span className="text-slate-500">Uptime</span>
+                <span className="text-slate-900 font-mono text-xs">99.99%</span>
+              </div>
+              <div className="flex justify-between items-center text-sm">
+                <span className="text-slate-500">Block Height</span>
+                <span className="text-indigo-400 font-mono text-xs">1,842,901</span>
+              </div>
+            </div>
+          </div>
+
           {/* Treasury Stats */}
-          <div className="p-6 rounded-2xl bg-white/5 border border-white/10 relative overflow-hidden flex flex-col h-full">
-            <div className="flex items-center gap-2 text-slate-400 mb-4 relative z-10">
+          <div className="p-6 rounded-2xl bg-white shadow-sm border border-slate-200 relative overflow-hidden flex flex-col h-full">
+            <div className="flex items-center gap-2 text-slate-500 mb-4 relative z-10">
               <LineChart className="w-5 h-5" />
               <h2 className="font-semibold">Treasury TVL</h2>
             </div>
-            <div className="text-4xl font-extrabold text-white mb-2 relative z-10">$1.24M</div>
+            <div className="text-4xl font-extrabold text-slate-900 mb-2 relative z-10">$1.24M</div>
             <div className="text-sm text-emerald-400 flex items-center gap-1 mb-4 relative z-10">
               <CheckCircle2 className="w-4 h-4" /> +5.2% this week (AI Managed)
             </div>
@@ -313,7 +345,7 @@ const Dashboard = () => {
                       <stop offset="95%" stopColor="#6366f1" stopOpacity={0}/>
                     </linearGradient>
                   </defs>
-                  <Tooltip contentStyle={{ backgroundColor: '#0f172a', borderColor: '#1e293b', borderRadius: '8px' }} />
+                  <Tooltip contentStyle={{ backgroundColor: '#ffffff', borderColor: '#e2e8f0', borderRadius: '8px' }} />
                   <Area type="monotone" dataKey="value" stroke="#6366f1" strokeWidth={2} fillOpacity={1} fill="url(#colorValue)" />
                 </AreaChart>
               </ResponsiveContainer>
@@ -321,8 +353,8 @@ const Dashboard = () => {
           </div>
 
           {/* Treasury Allocation (Pie Chart) */}
-          <div className="p-6 rounded-2xl bg-white/5 border border-white/10 flex flex-col">
-            <div className="flex items-center gap-2 text-slate-400 mb-4">
+          <div className="p-6 rounded-2xl bg-white shadow-sm border border-slate-200 flex flex-col">
+            <div className="flex items-center gap-2 text-slate-500 mb-4">
               <PieChartIcon className="w-5 h-5 text-amber-400" />
               <h2 className="font-semibold">Asset Allocation</h2>
             </div>
@@ -344,8 +376,8 @@ const Dashboard = () => {
                     ))}
                   </Pie>
                   <Tooltip 
-                    contentStyle={{ backgroundColor: '#0f172a', borderColor: '#1e293b', borderRadius: '8px' }} 
-                    itemStyle={{ color: '#fff' }}
+                    contentStyle={{ backgroundColor: '#ffffff', borderColor: '#e2e8f0', borderRadius: '8px' }} 
+                    itemStyle={{ color: '#ffffff' }}
                   />
                 </PieChart>
               </ResponsiveContainer>
@@ -354,22 +386,22 @@ const Dashboard = () => {
               {ASSET_ALLOCATION.map(asset => (
                 <div key={asset.name} className="flex items-center gap-1">
                   <div className="w-3 h-3 rounded-full" style={{ backgroundColor: asset.color }} />
-                  <span className="text-slate-300">{asset.name} {asset.value}%</span>
+                  <span className="text-slate-600">{asset.name} {asset.value}%</span>
                 </div>
               ))}
             </div>
           </div>
 
           {/* Execution History */}
-          <div className="p-6 rounded-2xl bg-white/5 border border-white/10 flex-1">
-            <div className="flex items-center gap-2 text-slate-400 mb-4">
+          <div className="p-6 rounded-2xl bg-white shadow-sm border border-slate-200 flex-1">
+            <div className="flex items-center gap-2 text-slate-500 mb-4">
               <Activity className="w-5 h-5 text-emerald-400" />
               <h2 className="font-semibold">Execution History (Live)</h2>
             </div>
             <div className="space-y-4">
               {MOCK_EXECUTIONS.map((exec, i) => (
-                <div key={i} className="flex flex-col gap-1 text-sm border-b border-white/5 pb-3 last:border-0 last:pb-0">
-                  <div className="text-slate-300 font-medium">{exec.action}</div>
+                <div key={i} className="flex flex-col gap-1 text-sm border-b border-slate-100 pb-3 last:border-0 last:pb-0">
+                  <div className="text-slate-600 font-medium">{exec.action}</div>
                   <div className="flex items-center justify-between">
                     <span className="text-xs text-slate-500">{exec.time}</span>
                     <a href="#" className="text-xs text-indigo-400 font-mono hover:underline">{exec.id}</a>
@@ -379,56 +411,24 @@ const Dashboard = () => {
             </div>
           </div>
 
-          {/* TEE Enclave Status */}
-          <div className="p-6 rounded-2xl bg-white/5 border border-white/10 relative overflow-hidden flex flex-col">
-            <div className="absolute top-0 right-0 p-4 opacity-10">
-              <Server className="w-24 h-24" />
-            </div>
-            <div className="flex items-center gap-2 text-slate-400 mb-4 relative z-10">
-              <Shield className="w-5 h-5 text-indigo-400" />
-              <h2 className="font-semibold">TEE Enclave Status</h2>
-            </div>
-            <div className="space-y-3 relative z-10">
-              <div className="flex justify-between items-center text-sm">
-                <span className="text-slate-400">Node Status</span>
-                <span className="text-emerald-400 font-medium flex items-center gap-1">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                  Active
-                </span>
-              </div>
-              <div className="flex justify-between items-center text-sm">
-                <span className="text-slate-400">Encryption</span>
-                <span className="text-white font-mono text-xs">AES-256-GCM</span>
-              </div>
-              <div className="flex justify-between items-center text-sm">
-                <span className="text-slate-400">Uptime</span>
-                <span className="text-white font-mono text-xs">99.99%</span>
-              </div>
-              <div className="flex justify-between items-center text-sm">
-                <span className="text-slate-400">Block Height</span>
-                <span className="text-indigo-400 font-mono text-xs">1,842,901</span>
-              </div>
-            </div>
-          </div>
-
           {/* Governance Leaderboard */}
-          <div className="p-6 rounded-2xl bg-white/5 border border-white/10 flex-1 flex flex-col">
-            <div className="flex items-center gap-2 text-slate-400 mb-4">
+          <div className="p-6 rounded-2xl bg-white shadow-sm border border-slate-200 flex-1 flex flex-col">
+            <div className="flex items-center gap-2 text-slate-500 mb-4">
               <Trophy className="w-5 h-5 text-amber-400" />
               <h2 className="font-semibold">Top Delegators</h2>
             </div>
             <div className="space-y-4 flex-1">
               {[
                 { address: '0x1A4...8B2', power: '450k', color: 'text-amber-400' },
-                { address: '0x8F2...3C9', power: '320k', color: 'text-slate-300' },
+                { address: '0x8F2...3C9', power: '320k', color: 'text-slate-600' },
                 { address: '0x3E1...7A5', power: '180k', color: 'text-orange-400' },
-                { address: '0x9D4...2F1', power: '150k', color: 'text-slate-400' },
+                { address: '0x9D4...2F1', power: '150k', color: 'text-slate-500' },
                 { address: '0x2B8...1E9', power: '120k', color: 'text-slate-500' },
               ].map((user, i) => (
-                <div key={i} className="flex items-center justify-between text-sm bg-black/20 p-2 rounded-lg">
+                <div key={i} className="flex items-center justify-between text-sm bg-slate-100 p-2 rounded-lg">
                   <div className="flex items-center gap-3">
                     <span className={`font-bold ${user.color}`}>#{i + 1}</span>
-                    <span className="text-slate-300 font-mono">{user.address}</span>
+                    <span className="text-slate-600 font-mono">{user.address}</span>
                   </div>
                   <span className="text-indigo-400 font-semibold">{user.power} VP</span>
                 </div>
@@ -441,10 +441,10 @@ const Dashboard = () => {
         <div className="xl:col-span-2 space-y-6">
           
           {/* AI Agent Terminal (Interactive) */}
-          <div className="rounded-2xl bg-black border border-indigo-500/30 flex flex-col h-64 overflow-hidden shadow-[0_0_15px_rgba(99,102,241,0.1)]">
-            <div className="bg-slate-900/80 px-4 py-2 border-b border-indigo-500/20 flex items-center gap-2">
+          <div className="rounded-2xl bg-white text-slate-100 border border-indigo-500/30 flex flex-col h-64 overflow-hidden shadow-[0_0_15px_rgba(99,102,241,0.1)]">
+            <div className="bg-slate-50/80 px-4 py-2 border-b border-indigo-500/20 flex items-center gap-2">
               <Terminal className="w-4 h-4 text-indigo-400" />
-              <span className="text-xs font-semibold text-slate-400 tracking-wider">AI AGENT TEE TERMINAL</span>
+              <span className="text-xs font-semibold text-slate-500 tracking-wider">AI AGENT TEE TERMINAL</span>
             </div>
             <div className="flex-1 p-4 overflow-y-auto font-mono text-xs space-y-2 flex flex-col justify-end">
               {terminalLogs.map((log, i) => (
@@ -454,7 +454,7 @@ const Dashboard = () => {
                 </div>
               ))}
             </div>
-            <form onSubmit={handleTerminalSubmit} className="flex gap-2 p-4 pt-0 border-t border-indigo-500/10 mt-2 bg-black/50">
+            <form onSubmit={handleTerminalSubmit} className="flex gap-2 p-4 pt-0 border-t border-indigo-500/10 mt-2 bg-white text-slate-100/50">
               <span className="text-emerald-400 font-mono text-sm mt-1">{'>'}</span>
               <input 
                 type="text" 
@@ -466,7 +466,7 @@ const Dashboard = () => {
             </form>
           </div>
 
-          <h2 className="text-2xl font-bold text-white flex items-center gap-2 pt-2">
+          <h2 className="text-2xl font-bold text-slate-900 flex items-center gap-2 pt-2">
             Active Proposals
           </h2>
           
@@ -477,10 +477,10 @@ const Dashboard = () => {
                 const againstPercent = ((p.votesAgainst / totalVotes) * 100).toFixed(1);
                 
                 return (
-                  <div key={p.id} className="p-5 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors flex flex-col h-full">
+                  <div key={p.id} className="p-5 rounded-2xl bg-white shadow-sm border border-slate-200 hover:bg-slate-50 transition-colors flex flex-col h-full">
                     <div className="flex justify-between items-start mb-4">
                       <div className="flex items-center gap-2">
-                        <span className="text-slate-400 text-sm font-mono">ID: #{p.id}</span>
+                        <span className="text-slate-500 text-sm font-mono">ID: #{p.id}</span>
                         <span className={`text-xs px-2 py-1 rounded-md font-medium ${
                           p.status === 'Active' ? 'bg-indigo-500/20 text-indigo-400' :
                           p.status === 'Passed' ? 'bg-emerald-500/20 text-emerald-400' :
@@ -508,7 +508,7 @@ const Dashboard = () => {
                       )}
                     </div>
 
-                    <h3 className="text-lg font-bold text-white mb-6 flex-1 pr-4">{p.title}</h3>
+                    <h3 className="text-lg font-bold text-slate-900 mb-6 flex-1 pr-4">{p.title}</h3>
 
                     <div className="mt-auto">
                       <div className="flex justify-between text-sm mb-2">
