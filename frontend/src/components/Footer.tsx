@@ -28,8 +28,8 @@ const Footer = () => {
             <ul className="space-y-3 text-sm text-slate-300">
               <li><Link to="/dashboard" className="hover:text-white transition-colors">Active Proposals</Link></li>
               <li><Link to="/dashboard" className="hover:text-white transition-colors">Treasury Metrics</Link></li>
-              <li><a href="#" className="hover:text-white transition-colors">Leaderboard</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">How it works</a></li>
+              <li><a href="/dashboard#leaderboard" className="hover:text-white transition-colors">Leaderboard</a></li>
+              <li><a href="/#features" className="hover:text-white transition-colors">How it works</a></li>
             </ul>
           </div>
 

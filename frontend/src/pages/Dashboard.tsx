@@ -247,7 +247,7 @@ const Dashboard = () => {
           </div>
 
           {/* Top Delegators (Demo) */}
-          <div className="p-6 rounded-2xl bg-white/5 border border-white/10">
+          <div id="leaderboard" className="p-6 rounded-2xl bg-white/5 border border-white/10 scroll-mt-24">
             <div className="flex items-center gap-2 text-slate-400 mb-4">
               <ShieldCheck className="w-5 h-5 text-indigo-400" />
               <h2 className="font-semibold">Top Delegators (Demo)</h2>
