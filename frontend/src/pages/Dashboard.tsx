@@ -60,6 +60,8 @@ const Dashboard = () => {
   const [address, setAddress] = useState<string | null>(null);
   const [isConnecting, setIsConnecting] = useState(false);
   const [proposals, setProposals] = useState(MOCK_PROPOSALS);
+  const [activeTab, setActiveTab] = useState<'active' | 'history'>('active');
+  const [voteHistory, setVoteHistory] = useState<{id: number, type: 'for' | 'against', title: string, txHash: string}[]>([]);
   const [isDemoRunning, setIsDemoRunning] = useState(false);
   const [cryptoPrices, setCryptoPrices] = useState<any>({});
 
@@ -173,8 +175,16 @@ const Dashboard = () => {
             View on Ritual Explorer <ExternalLink className="w-3 h-3" />
           </a>
         </div>
-      ), { duration: 5000, style: { background: '#e2e8f0', color: '#ffffff', border: '1px solid rgba(255,255,255,0.1)' } });
+      ), { duration: 5000, style: { background: '#ffffff', color: '#0f172a', border: '1px solid #e2e8f0' } });
       
+      // Update History
+      setVoteHistory(prev => [...prev, {
+        id: proposalId,
+        type,
+        title: proposals.find(p => p.id === proposalId)?.title || `Proposal #${proposalId}`,
+        txHash
+      }]);
+
       // Update UI Realtime
       setProposals(prev => prev.map(p => {
         if (p.id === proposalId) {
@@ -466,10 +476,27 @@ const Dashboard = () => {
             </form>
           </div>
 
-          <h2 className="text-2xl font-bold text-slate-900 flex items-center gap-2 pt-2">
-            Active Proposals
-          </h2>
+          <div className="flex items-center justify-between pt-2">
+            <h2 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
+              {activeTab === 'active' ? 'Active Proposals' : 'Your Voting History'}
+            </h2>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setActiveTab('active')}
+                className={`px-4 py-2 text-sm font-semibold rounded-full transition-colors ${activeTab === 'active' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
+              >
+                Active
+              </button>
+              <button
+                onClick={() => setActiveTab('history')}
+                className={`px-4 py-2 text-sm font-semibold rounded-full transition-colors ${activeTab === 'history' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
+              >
+                History
+              </button>
+            </div>
+          </div>
           
+          {activeTab === 'active' ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 auto-rows-fr">
               {proposals.map((p) => {
                 const totalVotes = p.votesFor + p.votesAgainst || 1;
@@ -482,9 +509,9 @@ const Dashboard = () => {
                       <div className="flex items-center gap-2">
                         <span className="text-slate-500 text-sm font-mono">ID: #{p.id}</span>
                         <span className={`text-xs px-2 py-1 rounded-md font-medium ${
-                          p.status === 'Active' ? 'bg-indigo-500/20 text-indigo-400' :
-                          p.status === 'Passed' ? 'bg-emerald-500/20 text-emerald-400' :
-                          'bg-amber-500/20 text-amber-400'
+                          p.status === 'Active' ? 'bg-indigo-50 text-indigo-600 border border-indigo-200' :
+                          p.status === 'Passed' ? 'bg-emerald-50 text-emerald-600 border border-emerald-200' :
+                          'bg-amber-50 text-amber-600 border border-amber-200'
                         }`}>
                           {p.status}
                         </span>
@@ -494,13 +521,13 @@ const Dashboard = () => {
                         <div className="flex gap-2">
                           <button 
                             onClick={() => handleVote(p.id, 'for')}
-                            className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 border border-emerald-500/20 transition-colors"
+                            className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-emerald-50 text-emerald-600 hover:bg-emerald-100 border border-emerald-200 transition-colors"
                           >
                             Vote FOR
                           </button>
                           <button 
                             onClick={() => handleVote(p.id, 'against')}
-                            className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 border border-rose-500/20 transition-colors"
+                            className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-rose-50 text-rose-600 hover:bg-rose-100 border border-rose-200 transition-colors"
                           >
                             Vote AGAINST
                           </button>
@@ -512,10 +539,10 @@ const Dashboard = () => {
 
                     <div className="mt-auto">
                       <div className="flex justify-between text-sm mb-2">
-                        <span className="text-emerald-400 font-medium">For: {p.votesFor.toLocaleString()} ({forPercent}%)</span>
-                        <span className="text-rose-400 font-medium">Against: {p.votesAgainst.toLocaleString()} ({againstPercent}%)</span>
+                        <span className="text-emerald-600 font-medium">For: {p.votesFor.toLocaleString()} ({forPercent}%)</span>
+                        <span className="text-rose-600 font-medium">Against: {p.votesAgainst.toLocaleString()} ({againstPercent}%)</span>
                       </div>
-                      <div className="w-full bg-rose-500/20 rounded-full h-2 flex overflow-hidden">
+                      <div className="w-full bg-rose-100 rounded-full h-2 flex overflow-hidden">
                         <div 
                           className="bg-emerald-500 h-full rounded-full transition-all duration-1000"
                           style={{ width: `${forPercent}%` }}
@@ -526,7 +553,33 @@ const Dashboard = () => {
                 );
               })}
             </div>
-
+          ) : (
+            <div className="space-y-4">
+              {voteHistory.length === 0 ? (
+                <div className="p-8 text-center bg-white border border-slate-200 shadow-sm rounded-2xl text-slate-500">
+                  <Activity className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+                  <p>You haven't voted on any proposals yet.</p>
+                </div>
+              ) : (
+                voteHistory.map((vote, idx) => (
+                  <div key={idx} className="p-5 rounded-2xl bg-white shadow-sm border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                      <div className="text-sm text-slate-500 font-mono mb-1">ID: #{vote.id}</div>
+                      <h3 className="text-lg font-bold text-slate-900">{vote.title}</h3>
+                    </div>
+                    <div className="flex flex-col sm:items-end gap-2">
+                      <span className={`px-3 py-1 text-xs font-semibold rounded-lg border ${vote.type === 'for' ? 'bg-emerald-50 text-emerald-600 border-emerald-200' : 'bg-rose-50 text-rose-600 border-rose-200'}`}>
+                        Voted {vote.type.toUpperCase()}
+                      </span>
+                      <a href={`https://explorer.ritual.net/tx/${vote.txHash}`} target="_blank" rel="noreferrer" className="text-xs text-indigo-500 hover:text-indigo-600 flex items-center gap-1 font-mono">
+                        View Tx <ExternalLink className="w-3 h-3" />
+                      </a>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          )}
         </div>
 
       </main>
