@@ -35,6 +35,13 @@ const MOCK_LOGS = [
   "Proposal Generated and Sent to DAO."
 ];
 
+const COIN_IDS = 'bitcoin,ethereum,tether,binancecoin,solana,ripple,dogecoin,cardano,avalanche-2,uniswap,chainlink,polkadot';
+const COIN_SYMBOLS: Record<string, string> = {
+  bitcoin: 'BTC', ethereum: 'ETH', tether: 'USDT', binancecoin: 'BNB', 
+  solana: 'SOL', ripple: 'XRP', dogecoin: 'DOGE', cardano: 'ADA', 
+  'avalanche-2': 'AVAX', uniswap: 'UNI', chainlink: 'LINK', polkadot: 'DOT'
+};
+
 const Dashboard = () => {
   const [address, setAddress] = useState<string | null>(null);
   const [isConnecting, setIsConnecting] = useState(false);
@@ -52,7 +59,7 @@ const Dashboard = () => {
     setupProvider();
 
     // Fetch live prices from CoinGecko
-    fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum,bitcoin,uniswap&vs_currencies=usd&include_24hr_change=true')
+    fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${COIN_IDS}&vs_currencies=usd&include_24hr_change=true`)
       .then(res => res.json())
       .then(data => setCryptoPrices(data))
       .catch(console.error);
@@ -198,30 +205,27 @@ const Dashboard = () => {
         </div>
       </header>
 
-      {/* Live Crypto Ticker */}
-      <div className="w-full bg-slate-900 border-b border-white/5 py-2 px-6 flex justify-center">
-        <div className="flex flex-wrap justify-center gap-6 md:gap-12 text-xs font-mono">
-          <div className="flex items-center gap-2">
-            <span className="text-slate-400">ETH</span>
-            <span className="text-white">${cryptoPrices.ethereum?.usd?.toLocaleString() || '---'}</span>
-            <span className={cryptoPrices.ethereum?.usd_24h_change >= 0 ? "text-emerald-400" : "text-red-400"}>
-              {cryptoPrices.ethereum?.usd_24h_change > 0 ? '+' : ''}{cryptoPrices.ethereum?.usd_24h_change?.toFixed(2)}%
-            </span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="text-slate-400">BTC</span>
-            <span className="text-white">${cryptoPrices.bitcoin?.usd?.toLocaleString() || '---'}</span>
-            <span className={cryptoPrices.bitcoin?.usd_24h_change >= 0 ? "text-emerald-400" : "text-red-400"}>
-              {cryptoPrices.bitcoin?.usd_24h_change > 0 ? '+' : ''}{cryptoPrices.bitcoin?.usd_24h_change?.toFixed(2)}%
-            </span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="text-slate-400">UNI</span>
-            <span className="text-white">${cryptoPrices.uniswap?.usd?.toLocaleString() || '---'}</span>
-            <span className={cryptoPrices.uniswap?.usd_24h_change >= 0 ? "text-emerald-400" : "text-red-400"}>
-              {cryptoPrices.uniswap?.usd_24h_change > 0 ? '+' : ''}{cryptoPrices.uniswap?.usd_24h_change?.toFixed(2)}%
-            </span>
-          </div>
+      {/* Live Crypto Ticker (Marquee) */}
+      <div className="w-full bg-slate-900 border-b border-white/5 py-2 overflow-hidden relative flex items-center group">
+        {/* Fade edges */}
+        <div className="absolute left-0 top-0 bottom-0 w-20 bg-gradient-to-r from-slate-900 to-transparent z-10 pointer-events-none" />
+        <div className="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-slate-900 to-transparent z-10 pointer-events-none" />
+        
+        <div className="flex w-max animate-marquee group-hover:[animation-play-state:paused]">
+          {/* Render list twice to create an infinite loop effect */}
+          {[1, 2].map((loopIndex) => (
+            <div key={loopIndex} className="flex gap-12 px-6">
+              {Object.entries(cryptoPrices).map(([id, data]: [string, any]) => (
+                <div key={`${loopIndex}-${id}`} className="flex items-center gap-2 text-xs font-mono shrink-0">
+                  <span className="text-slate-400 font-bold">{COIN_SYMBOLS[id]}</span>
+                  <span className="text-white">${data?.usd?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 4 }) || '---'}</span>
+                  <span className={data?.usd_24h_change >= 0 ? "text-emerald-400" : "text-red-400"}>
+                    {data?.usd_24h_change > 0 ? '+' : ''}{data?.usd_24h_change?.toFixed(2)}%
+                  </span>
+                </div>
+              ))}
+            </div>
+          ))}
         </div>
       </div>
 
