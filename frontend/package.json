@@ -1,5 +1,5 @@
 {
-  "name": "frontend",
+  "name": "evotrade-dao",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@tailwindcss/postcss": "^4.3.2",
+    "@tailwindcss/vite": "^4.3.2",
     "autoprefixer": "^10.5.2",
     "ethers": "^6.17.0",
     "lucide-react": "^1.24.0",
