@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import { ArrowLeft, Home, LogOut, Volume2, VolumeX, Wallet, Droplets } from 'lucide-react'
+import { ArrowLeft, Home, LogOut, Volume2, VolumeX, Wallet, Droplets, Sun, Moon } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { ethers } from 'ethers'
@@ -15,6 +15,7 @@ export function TopHeader() {
   const [isConnecting, setIsConnecting] = useState(false)
   const [showWalletModal, setShowWalletModal] = useState(false)
   const [mounted, setMounted] = useState(false)
+  const [isLightMode, setIsLightMode] = useState(false)
 
   const { isMuted, toggleMute, playClick } = useAudio()
 
@@ -23,7 +24,26 @@ export function TopHeader() {
     if (localStorage.getItem('walletDisconnected') !== 'true') {
       checkIfWalletIsConnected()
     }
+    
+    // Check saved theme
+    if (localStorage.getItem('theme') === 'light') {
+      setIsLightMode(true)
+      document.documentElement.classList.add('light-theme')
+    }
   }, [])
+
+  const toggleTheme = () => {
+    playClick()
+    if (isLightMode) {
+      document.documentElement.classList.remove('light-theme')
+      localStorage.setItem('theme', 'dark')
+      setIsLightMode(false)
+    } else {
+      document.documentElement.classList.add('light-theme')
+      localStorage.setItem('theme', 'light')
+      setIsLightMode(true)
+    }
+  }
 
   const checkIfWalletIsConnected = async () => {
     try {
@@ -162,6 +182,14 @@ export function TopHeader() {
       </div>
 
       <div className="flex items-center gap-4">
+        <button
+          onClick={toggleTheme}
+          className="p-2 text-gray-400 hover:text-white transition-colors rounded-sm border border-transparent hover:border-gray-700 hover:bg-gray-800/30"
+          title={isLightMode ? "Switch to Dark Mode" : "Switch to Light Mode"}
+        >
+          {isLightMode ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
+        </button>
+
         <button
           onClick={() => {
             playClick()

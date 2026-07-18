@@ -169,3 +169,19 @@ option {
   background-color: #0a0e1a !important;
   color: #ffffff !important;
 }
+
+/* 
+  Light Mode Hack: Inverts all colors on the page while maintaining the same hues.
+  This turns the dark cyberpunk theme into a bright "sterile corporate" theme instantly 
+  without rewriting all the Tailwind classes.
+*/
+html.light-theme {
+  filter: invert(1) hue-rotate(180deg);
+  background-color: white;
+}
+
+/* Ensure images and specific media do not get inverted */
+html.light-theme img,
+html.light-theme video {
+  filter: invert(1) hue-rotate(180deg);
+}
