@@ -21,10 +21,10 @@ export default function TreasuryPage() {
             const rawBalance = await provider.getBalance(accounts[0])
             // Convert from Wei to ETH/ARC and format to 4 decimal places
             const formatted = parseFloat(ethers.formatEther(rawBalance)).toFixed(4)
-            setBalance(formatted + ' ARC')
+            setBalance(formatted + ' USDC')
           }
         } else {
-          setBalance('0.0000 ARC (No Wallet)')
+          setBalance('0.0000 USDC (No Wallet)')
         }
       } catch (err) {
         console.error("Failed to fetch balance:", err)
@@ -156,7 +156,7 @@ export default function TreasuryPage() {
                 />
               </div>
               <div>
-                <label className="block text-[10px] text-gray-400 mb-1.5 uppercase tracking-widest">Amount (ARC/ETH)</label>
+                <label className="block text-[10px] text-gray-400 mb-1.5 uppercase tracking-widest">Amount (USDC)</label>
                 <input 
                   type="number" 
                   step="any"
