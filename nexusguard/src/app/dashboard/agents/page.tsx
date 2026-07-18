@@ -1,10 +1,14 @@
+'use client'
+
+import { ShieldCheck, Cpu, Scale, CreditCard, ShieldAlert, Activity, Terminal } from 'lucide-react'
+
 export default function AgentsPage() {
   const agents = [
-    { name: 'Escrow', role: 'Smart Contract Management', status: 'Active', uptime: '99.9%', color: 'blue' },
-    { name: 'Validation', role: 'Deliverable QA & Scoring', status: 'Active', uptime: '99.8%', color: 'purple' },
-    { name: 'Compliance', role: 'Tax & Regulatory Rules', status: 'Active', uptime: '100%', color: 'emerald' },
-    { name: 'Payment', role: 'Fund Disbursement', status: 'Active', uptime: '99.9%', color: 'yellow' },
-    { name: 'Risk', role: 'Fraud Detection', status: 'Active', uptime: '99.9%', color: 'red' },
+    { name: 'Escrow', role: 'Smart Contract Mgmt', status: 'Active', uptime: '99.9%', color: 'blue', icon: ShieldCheck },
+    { name: 'Validation', role: 'Deliverable QA', status: 'Active', uptime: '99.8%', color: 'purple', icon: Cpu },
+    { name: 'Compliance', role: 'Tax & Regulatory', status: 'Active', uptime: '100%', color: 'emerald', icon: Scale },
+    { name: 'Payment', role: 'Fund Disbursement', status: 'Active', uptime: '99.9%', color: 'yellow', icon: CreditCard },
+    { name: 'Risk', role: 'Fraud Detection', status: 'Active', uptime: '99.9%', color: 'red', icon: ShieldAlert },
   ]
 
   const mockActions = [
@@ -16,77 +20,119 @@ export default function AgentsPage() {
     { time: '08:30:00', agent: 'Escrow', action: 'Locked 5,000 USDC', target: 'Job #001', hash: '0xjkl...012' },
   ]
 
-  const getAgentColor = (agentName: string) => {
-    switch(agentName) {
-      case 'Escrow': return 'text-blue-400 bg-blue-400/10 border-blue-400/20'
-      case 'Validation': return 'text-purple-400 bg-purple-400/10 border-purple-400/20'
-      case 'Compliance': return 'text-emerald-400 bg-emerald-400/10 border-emerald-400/20'
-      case 'Payment': return 'text-yellow-400 bg-yellow-400/10 border-yellow-400/20'
-      case 'Risk': return 'text-red-400 bg-red-400/10 border-red-400/20'
-      default: return 'text-gray-400 bg-gray-400/10 border-gray-400/20'
+  const getAgentColorStyle = (color: string) => {
+    switch(color) {
+      case 'blue': return 'text-blue-400 border-blue-400/30 bg-blue-400/5 group-hover:border-blue-400/60 group-hover:bg-blue-400/10'
+      case 'purple': return 'text-purple-400 border-purple-400/30 bg-purple-400/5 group-hover:border-purple-400/60 group-hover:bg-purple-400/10'
+      case 'emerald': return 'text-emerald-400 border-emerald-400/30 bg-emerald-400/5 group-hover:border-emerald-400/60 group-hover:bg-emerald-400/10'
+      case 'yellow': return 'text-[#d4af37] border-[#d4af37]/30 bg-[#d4af37]/5 group-hover:border-[#d4af37]/60 group-hover:bg-[#d4af37]/10'
+      case 'red': return 'text-red-400 border-red-400/30 bg-red-400/5 group-hover:border-red-400/60 group-hover:bg-red-400/10'
+      default: return 'text-gray-400 border-gray-400/30 bg-gray-400/5 group-hover:border-gray-400/60 group-hover:bg-gray-400/10'
+    }
+  }
+  
+  const getAgentGlow = (color: string) => {
+    switch(color) {
+      case 'blue': return 'shadow-[0_0_15px_rgba(96,165,250,0.3)]'
+      case 'purple': return 'shadow-[0_0_15px_rgba(192,132,252,0.3)]'
+      case 'emerald': return 'shadow-[0_0_15px_rgba(52,211,153,0.3)]'
+      case 'yellow': return 'shadow-[0_0_15px_rgba(212,175,55,0.3)]'
+      case 'red': return 'shadow-[0_0_15px_rgba(248,113,113,0.3)]'
+      default: return ''
     }
   }
 
+  const getAgentBadge = (agentName: string) => {
+    const agent = agents.find(a => a.name === agentName)
+    if (!agent) return 'text-gray-400 border-gray-400/30 bg-gray-400/5'
+    return getAgentColorStyle(agent.color).split('group-hover')[0]
+  }
+
   return (
-    <div className="space-y-8">
-      <div className="flex justify-between items-center">
+    <div className="space-y-8 font-mono">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-end border-b border-gray-800 pb-4 gap-4">
         <div>
-          <h1 className="text-3xl font-bold mb-2">AI Agent Network</h1>
-          <p className="text-gray-400">Monitor and configure your autonomous workforce.</p>
+          <h1 className="text-3xl font-space-grotesk font-bold text-[#d4af37] uppercase tracking-tight mb-1 flex items-center gap-3">
+            <Activity className="w-8 h-8 text-[#d4af37]" />
+            Agent_Swarm
+          </h1>
+          <p className="text-gray-400 text-sm uppercase tracking-widest">Monitor and configure your autonomous workforce</p>
         </div>
-        <button className="bg-gray-800 hover:bg-gray-700 text-white px-6 py-3 rounded-xl font-medium border border-gray-700 transition-colors">
-          Register Custom Agent
+        <button className="border border-[#d4af37] bg-[#d4af37]/5 hover:bg-[#d4af37]/20 text-[#d4af37] px-6 py-2 rounded-sm font-bold uppercase tracking-widest text-xs transition-colors flex items-center gap-2">
+          <Terminal className="w-4 h-4" />
+          Deploy New Agent
         </button>
       </div>
 
       {/* Agents Status Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-        {agents.map((agent) => (
-          <div key={agent.name} className="bg-gray-900/40 border border-gray-800 rounded-2xl p-6 backdrop-blur-sm text-center hover:border-gray-700 transition-colors">
-            <div className="w-12 h-12 mx-auto rounded-full bg-gray-800 flex items-center justify-center mb-4 border border-gray-700 relative">
-              🤖
-              <div className="absolute top-0 right-0 w-3 h-3 bg-emerald-500 rounded-full border-2 border-gray-900 shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+        {agents.map((agent) => {
+          const Icon = agent.icon
+          return (
+            <div 
+              key={agent.name} 
+              className={`group bg-gray-900/40 border rounded-sm p-5 relative transition-all duration-300 ${getAgentColorStyle(agent.color)} cursor-pointer hover:-translate-y-1`}
+            >
+              {/* Corner accents */}
+              <div className="absolute top-0 left-0 w-1.5 h-1.5 border-t border-l border-current opacity-50" />
+              <div className="absolute top-0 right-0 w-1.5 h-1.5 border-t border-r border-current opacity-50" />
+              <div className="absolute bottom-0 left-0 w-1.5 h-1.5 border-b border-l border-current opacity-50" />
+              <div className="absolute bottom-0 right-0 w-1.5 h-1.5 border-b border-r border-current opacity-50" />
+
+              <div className={`w-12 h-12 mx-auto rounded-full bg-black/50 flex items-center justify-center mb-4 border border-current relative ${getAgentGlow(agent.color)} transition-shadow`}>
+                <Icon className="w-5 h-5 opacity-80 group-hover:opacity-100" />
+                <div className="absolute top-0 right-0 w-2.5 h-2.5 bg-emerald-400 rounded-full border-2 border-[#0a0e1a] animate-pulse"></div>
+              </div>
+              
+              <h3 className="font-bold text-center uppercase tracking-widest text-xs mb-1 group-hover:text-white transition-colors">{agent.name}</h3>
+              <p className="text-[10px] text-gray-500 text-center uppercase tracking-wider mb-4 h-6 opacity-80 group-hover:opacity-100 transition-opacity">{agent.role}</p>
+              
+              <div className="flex justify-between items-center text-[10px] uppercase tracking-widest border-t border-current/20 pt-3 opacity-70 group-hover:opacity-100 transition-opacity">
+                <span>Uptime</span>
+                <span className="font-bold">{agent.uptime}</span>
+              </div>
             </div>
-            <h3 className="font-bold text-white">{agent.name}</h3>
-            <p className="text-xs text-gray-500 mt-1 mb-3 h-8">{agent.role}</p>
-            <div className="text-xs text-gray-400 bg-gray-800/50 py-1 rounded-md">
-              Uptime: {agent.uptime}
-            </div>
-          </div>
-        ))}
+          )
+        })}
       </div>
 
       {/* Action Log */}
-      <div className="bg-gray-900/40 border border-gray-800 rounded-2xl p-6 backdrop-blur-sm">
-        <h3 className="text-lg font-bold mb-6">Real-time Action Log</h3>
+      <div className="bg-gray-900/40 border border-gray-800 rounded-sm p-6 relative">
+        <div className="absolute top-0 left-0 w-1.5 h-1.5 border-t border-l border-gray-500" />
+        <div className="absolute top-0 right-0 w-1.5 h-1.5 border-t border-r border-gray-500" />
         
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
+        <div className="flex items-center gap-2 mb-6 border-b border-gray-800 pb-2">
+          <Terminal className="w-4 h-4 text-[#d4af37]" />
+          <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest">NETWORK_ACTIVITY_LOG</h3>
+        </div>
+        
+        <div className="overflow-x-auto custom-scrollbar">
+          <table className="w-full text-left border-collapse min-w-[800px]">
             <thead>
-              <tr className="border-b border-gray-800 text-gray-400 text-sm">
-                <th className="pb-3 font-medium w-24">Time</th>
-                <th className="pb-3 font-medium w-32">Agent</th>
-                <th className="pb-3 font-medium">Action</th>
-                <th className="pb-3 font-medium">Target</th>
-                <th className="pb-3 font-medium text-right">Tx Hash</th>
+              <tr className="border-b border-gray-800 text-gray-500 text-[10px] uppercase tracking-widest">
+                <th className="pb-3 font-bold w-24">Timestamp</th>
+                <th className="pb-3 font-bold w-36">Node / Agent</th>
+                <th className="pb-3 font-bold">Execution Data</th>
+                <th className="pb-3 font-bold w-48">Target Entity</th>
+                <th className="pb-3 font-bold text-right w-36">Tx Hash</th>
               </tr>
             </thead>
-            <tbody className="text-sm font-mono">
+            <tbody className="text-xs">
               {mockActions.map((action, i) => (
-                <tr key={i} className="border-b border-gray-800/50 hover:bg-gray-800/20 transition-colors">
-                  <td className="py-4 text-gray-500">{action.time}</td>
+                <tr key={i} className="border-b border-gray-800/50 hover:bg-[#d4af37]/5 transition-colors">
+                  <td className="py-4 text-gray-500 font-mono">{action.time}</td>
                   <td className="py-4">
-                    <span className={`px-2 py-1 rounded text-xs font-sans border ${getAgentColor(action.agent)}`}>
+                    <span className={`px-2 py-1 rounded-sm border text-[10px] font-bold uppercase tracking-wider ${getAgentBadge(action.agent)}`}>
                       {action.agent}
                     </span>
                   </td>
-                  <td className="py-4 text-gray-300 font-sans">{action.action}</td>
-                  <td className="py-4 text-gray-400">{action.target}</td>
-                  <td className="py-4 text-right">
+                  <td className="py-4 text-gray-300">{action.action}</td>
+                  <td className="py-4 text-gray-400 font-mono">{action.target}</td>
+                  <td className="py-4 text-right font-mono">
                     {action.hash !== '--' ? (
-                      <a href="#" className="text-blue-400 hover:underline">{action.hash}</a>
+                      <a href="#" className="text-[#d4af37] hover:underline hover:text-white transition-colors">{action.hash}</a>
                     ) : (
-                      <span className="text-gray-600">--</span>
+                      <span className="text-gray-700">--</span>
                     )}
                   </td>
                 </tr>
