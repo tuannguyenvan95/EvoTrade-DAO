@@ -72,13 +72,6 @@ export default function TeamPage() {
       setIsInviting(false)
       setTerminalOutput([])
     }
-      } else {
-        alert("Lỗi: " + (data.error || "Không thể gửi thư."))
-      }
-    } catch (err) {
-      alert("Lỗi kết nối máy chủ.")
-    } finally {
-      setIsInviting(false)
     }
   }
 
