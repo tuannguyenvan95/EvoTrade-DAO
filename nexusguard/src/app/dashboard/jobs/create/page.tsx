@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
+import { ethers } from 'ethers'
+import { BlueprintDropdown } from '@/components/ui/BlueprintDropdown'
 
 export default function CreateJobPage() {
   const router = useRouter()
@@ -39,16 +41,27 @@ export default function CreateJobPage() {
       
       const from = accounts[0];
       
+      let txValue = '0x0';
+      if (formData.currency === 'ETH' || formData.currency === 'ARC') {
+        if (!formData.budget || isNaN(Number(formData.budget))) {
+          alert("Vui lòng nhập số tiền hợp lệ!");
+          setIsSubmitting(false);
+          return;
+        }
+        // Convert budget to Wei (10^18)
+        txValue = ethers.parseUnits(formData.budget, 18).toString(16); // Convert BigInt to Hex
+        txValue = '0x' + txValue;
+      }
+      
       // Simulate a real Smart Contract call (requires gas)
-      // We send 0 value with dummy data so MetaMask recognizes it as a "Contract Interaction"
-      // This costs real Testnet Gas but doesn't require the user to have 5000 tokens for the demo.
+      // We send the computed value and dummy data so MetaMask recognizes it as a "Contract Interaction"
       const txHash = await ethereum.request({
         method: 'eth_sendTransaction',
         params: [
           {
             from: from,
             to: '0x0000000000000000000000000000000000008183', // Dummy ERC-8183 Escrow Contract
-            value: '0x0',
+            value: txValue,
             data: '0x0f2c4134', // Dummy function selector for createJob()
           },
         ],
@@ -115,15 +128,13 @@ export default function CreateJobPage() {
                   className="w-full bg-black/50 border border-gray-700 rounded-sm px-4 py-2.5 text-gray-200 font-mono text-sm focus:outline-none focus:border-[#d4af37] transition-colors"
                   placeholder="e.g. 5000"
                 />
-                <select 
-                  value={formData.currency}
-                  onChange={(e) => setFormData({...formData, currency: e.target.value})}
-                  className="bg-black/50 border border-gray-700 rounded-sm px-4 py-2.5 text-[#d4af37] font-mono text-sm focus:outline-none focus:border-[#d4af37] transition-colors"
-                >
-                  <option>USDC</option>
-                  <option>ARC</option>
-                  <option>ETH</option>
-                </select>
+                <div className="w-32">
+                  <BlueprintDropdown 
+                    options={['USDC', 'ARC', 'ETH']}
+                    value={formData.currency}
+                    onChange={(val) => setFormData({...formData, currency: val})}
+                  />
+                </div>
               </div>
             </div>
 
