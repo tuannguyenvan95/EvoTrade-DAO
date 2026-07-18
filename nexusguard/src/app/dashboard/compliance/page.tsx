@@ -202,30 +202,47 @@ export default function CompliancePage() {
             </div>
 
             <div className="space-y-4 text-sm text-gray-300">
-              <div className="bg-black/50 p-4 border border-gray-800 rounded-sm font-mono text-xs space-y-2">
-                <div className="flex justify-between">
-                  <span className="text-gray-500">Transactions Scanned:</span>
-                  <span className="text-white">1,248 Tx</span>
+              <div className="bg-black/50 p-4 border border-gray-800 rounded-sm font-mono text-xs space-y-3">
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-500">Transactions Scanned (30d):</span>
+                  <span className="text-white font-bold">1,248 Tx</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-500">Escrow Contracts Verified:</span>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-500">Active Escrow Contracts:</span>
                   <span className="text-white">56</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-500">Critical Violations:</span>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-500">KYC / AML Flags Raised:</span>
+                  <span className="text-yellow-500 font-bold">2</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-500">Missing Tax Forms (W-9/W-8BEN):</span>
+                  <span className="text-yellow-500 font-bold">1</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-500">Smart Contract Anomalies:</span>
+                  <span className="text-emerald-400 font-bold">0 (Secure)</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-500">Critical Legal Violations:</span>
                   <span className="text-emerald-400 font-bold">0</span>
                 </div>
-                <div className="border-t border-gray-800 pt-2 mt-2 flex justify-between">
-                  <span className="text-gray-500">Tax Liability Adjusted:</span>
-                  <span className="text-white">Match (100%)</span>
+                
+                <div className="border-t border-gray-800 pt-3 mt-3 flex justify-between items-center">
+                  <span className="text-gray-400 font-bold uppercase tracking-widest">Taxes Auto-Withheld (Q4):</span>
+                  <span className="text-[#d4af37] font-bold text-sm">$1,450.00 USDC</span>
                 </div>
               </div>
 
               <div className="bg-yellow-500/10 border border-yellow-500/30 p-3 rounded-sm flex items-start gap-3">
-                <AlertTriangle className="w-4 h-4 text-yellow-500 shrink-0 mt-0.5" />
+                <AlertTriangle className="w-5 h-5 text-yellow-500 shrink-0 mt-0.5" />
                 <div>
-                  <p className="text-xs font-bold text-yellow-500 uppercase tracking-widest mb-1">1 Warning Detected</p>
-                  <p className="text-[10px] text-gray-400 uppercase">Provider 0x4B2... missing W-9 form for upcoming $800 payment. Payment suspended by Agent until form is submitted.</p>
+                  <p className="text-xs font-bold text-yellow-500 uppercase tracking-widest mb-1">Action Required</p>
+                  <p className="text-[10px] text-gray-400 uppercase leading-relaxed">
+                    - Provider <strong>0x4B2...</strong> is missing W-9 form for upcoming $800 payment.<br/>
+                    - 2 transactions blocked from restricted jurisdictions (OFAC List).<br/>
+                    <em>Payments suspended by Agent until resolved.</em>
+                  </p>
                 </div>
               </div>
 
