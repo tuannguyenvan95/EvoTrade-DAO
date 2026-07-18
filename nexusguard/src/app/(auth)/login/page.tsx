@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-// import { createClient } from '@/lib/supabase/client' // Mock for now
+import { createClient } from '@/lib/supabase/client'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -17,13 +17,6 @@ export default function LoginPage() {
     setLoading(true)
     setError(null)
     
-    // Mock login logic
-    setTimeout(() => {
-      setLoading(false)
-      router.push('/dashboard')
-    }, 1000)
-    
-    /* Supabase integration
     const supabase = createClient()
     const { error } = await supabase.auth.signInWithPassword({
       email,
@@ -36,7 +29,6 @@ export default function LoginPage() {
     } else {
       router.push('/dashboard')
     }
-    */
   }
 
   return (

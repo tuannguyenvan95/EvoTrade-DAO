@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-// import { createClient } from '@/lib/supabase/client'
+import { createClient } from '@/lib/supabase/client'
 
 export default function RegisterPage() {
   const [email, setEmail] = useState('')
@@ -24,13 +24,6 @@ export default function RegisterPage() {
     setLoading(true)
     setError(null)
     
-    // Mock registration logic
-    setTimeout(() => {
-      setLoading(false)
-      setSuccess(true)
-    }, 1000)
-    
-    /*
     const supabase = createClient()
     const { error } = await supabase.auth.signUp({
       email,
@@ -49,7 +42,6 @@ export default function RegisterPage() {
       setSuccess(true)
       setLoading(false)
     }
-    */
   }
 
   if (success) {
