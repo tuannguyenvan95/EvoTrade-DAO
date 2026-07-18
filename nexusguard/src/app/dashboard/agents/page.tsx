@@ -9,6 +9,16 @@ export default function AgentsPage() {
   const [mounted, setMounted] = useState(false)
   const [agentConfigs, setAgentConfigs] = useState<Record<string, any>>({})
   const [currentModalConfig, setCurrentModalConfig] = useState<any>({})
+  const [showDeployModal, setShowDeployModal] = useState(false)
+  const [newAgentForm, setNewAgentForm] = useState({ name: '', role: '', endpoint: '' })
+
+  const [activeAgents, setActiveAgents] = useState([
+    { name: 'Escrow', role: 'Smart Contract Mgmt', status: 'Active', uptime: '99.9%', color: 'blue', icon: ShieldCheck },
+    { name: 'Validation', role: 'Deliverable QA', status: 'Active', uptime: '99.8%', color: 'purple', icon: Cpu },
+    { name: 'Compliance', role: 'Tax & Regulatory', status: 'Active', uptime: '100%', color: 'emerald', icon: Scale },
+    { name: 'Payment', role: 'Fund Disbursement', status: 'Active', uptime: '99.9%', color: 'yellow', icon: CreditCard },
+    { name: 'Risk', role: 'Fraud Detection', status: 'Active', uptime: '99.9%', color: 'red', icon: ShieldAlert },
+  ])
 
   useEffect(() => {
     setMounted(true)
@@ -54,13 +64,20 @@ export default function AgentsPage() {
     }
   }
 
-  const agents = [
-    { name: 'Escrow', role: 'Smart Contract Mgmt', status: 'Active', uptime: '99.9%', color: 'blue', icon: ShieldCheck },
-    { name: 'Validation', role: 'Deliverable QA', status: 'Active', uptime: '99.8%', color: 'purple', icon: Cpu },
-    { name: 'Compliance', role: 'Tax & Regulatory', status: 'Active', uptime: '100%', color: 'emerald', icon: Scale },
-    { name: 'Payment', role: 'Fund Disbursement', status: 'Active', uptime: '99.9%', color: 'yellow', icon: CreditCard },
-    { name: 'Risk', role: 'Fraud Detection', status: 'Active', uptime: '99.9%', color: 'red', icon: ShieldAlert },
-  ]
+  const handleDeployAgent = () => {
+    if (!newAgentForm.name || !newAgentForm.role) return;
+    const newAgent = {
+      name: newAgentForm.name,
+      role: newAgentForm.role,
+      status: 'Active',
+      uptime: '100%',
+      color: 'emerald',
+      icon: Terminal
+    }
+    setActiveAgents([...activeAgents, newAgent])
+    setShowDeployModal(false)
+    setNewAgentForm({ name: '', role: '', endpoint: '' })
+  }
 
   const mockActions = [
     { time: '10:45:22', agent: 'Validation', action: 'Approved deliverable score: 95/100', target: 'Job #002', hash: '0xabc...123' },
@@ -94,7 +111,7 @@ export default function AgentsPage() {
   }
 
   const getAgentBadge = (agentName: string) => {
-    const agent = agents.find(a => a.name === agentName)
+    const agent = activeAgents.find(a => a.name === agentName)
     if (!agent) return 'text-gray-400 border-gray-400/30 bg-gray-400/5'
     return getAgentColorStyle(agent.color).split('group-hover')[0]
   }
@@ -109,7 +126,10 @@ export default function AgentsPage() {
           </h1>
           <p className="text-gray-400 text-sm uppercase tracking-widest">Monitor and configure your autonomous workforce</p>
         </div>
-        <button className="border border-[#d4af37] bg-[#d4af37]/5 hover:bg-[#d4af37]/20 text-[#d4af37] px-6 py-2 rounded-sm font-bold uppercase tracking-widest text-xs transition-colors flex items-center gap-2">
+        <button 
+          onClick={() => setShowDeployModal(true)}
+          className="border border-[#d4af37] bg-[#d4af37]/5 hover:bg-[#d4af37]/20 text-[#d4af37] px-6 py-2 rounded-sm font-bold uppercase tracking-widest text-xs transition-colors flex items-center gap-2"
+        >
           <Terminal className="w-4 h-4" />
           Deploy New Agent
         </button>
@@ -117,7 +137,7 @@ export default function AgentsPage() {
 
       {/* Agents Status Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-        {agents.map((agent) => {
+        {activeAgents.map((agent) => {
           const Icon = agent.icon
           return (
             <div 
@@ -346,6 +366,72 @@ export default function AgentsPage() {
                 className="w-full mt-6 border border-current bg-white/5 hover:bg-white/10 text-white font-bold py-3 rounded-sm transition-colors uppercase tracking-widest text-xs"
               >
                 Apply Configuration
+              </button>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
+
+      {/* Deploy New Agent Modal */}
+      {showDeployModal && mounted && createPortal(
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4 font-mono">
+          <div className="bg-[#0a0e1a] border border-[#d4af37]/30 rounded-sm max-w-md w-full p-6 relative">
+            <button 
+              onClick={() => setShowDeployModal(false)}
+              className="absolute top-4 right-4 text-gray-500 hover:text-white transition-colors"
+            >
+              ✕
+            </button>
+            
+            <div className="flex items-center gap-4 mb-6 border-b border-gray-800 pb-4">
+              <div className="w-12 h-12 rounded-full bg-[#d4af37]/10 flex items-center justify-center border border-[#d4af37]/30">
+                <Terminal className="w-6 h-6 text-[#d4af37]" />
+              </div>
+              <div>
+                <h2 className="text-xl font-bold font-space-grotesk text-white tracking-widest uppercase">DEPLOY NEW AGENT</h2>
+                <p className="text-xs text-[#d4af37] uppercase tracking-widest">Add a custom AI node</p>
+              </div>
+            </div>
+
+            <div className="space-y-4 text-gray-300">
+              <div>
+                <label className="block text-[10px] text-gray-500 uppercase tracking-widest mb-2">Agent Name</label>
+                <input 
+                  type="text"
+                  placeholder="e.g. Copyright Checker"
+                  value={newAgentForm.name}
+                  onChange={(e) => setNewAgentForm({...newAgentForm, name: e.target.value})}
+                  className="w-full bg-black/50 border border-gray-700 rounded-sm p-3 text-sm focus:outline-none focus:border-[#d4af37]" 
+                />
+              </div>
+              <div>
+                <label className="block text-[10px] text-gray-500 uppercase tracking-widest mb-2">Role / Function</label>
+                <input 
+                  type="text"
+                  placeholder="e.g. Image analysis"
+                  value={newAgentForm.role}
+                  onChange={(e) => setNewAgentForm({...newAgentForm, role: e.target.value})}
+                  className="w-full bg-black/50 border border-gray-700 rounded-sm p-3 text-sm focus:outline-none focus:border-[#d4af37]" 
+                />
+              </div>
+              <div>
+                <label className="block text-[10px] text-gray-500 uppercase tracking-widest mb-2">AI Endpoint URL (Webhook)</label>
+                <input 
+                  type="text"
+                  placeholder="https://api.your-ai.com/webhook"
+                  value={newAgentForm.endpoint}
+                  onChange={(e) => setNewAgentForm({...newAgentForm, endpoint: e.target.value})}
+                  className="w-full bg-black/50 border border-gray-700 rounded-sm p-3 text-sm focus:outline-none focus:border-[#d4af37] text-emerald-400" 
+                />
+              </div>
+              
+              <button 
+                onClick={handleDeployAgent}
+                disabled={!newAgentForm.name || !newAgentForm.role}
+                className="w-full mt-6 border border-[#d4af37] bg-[#d4af37]/10 hover:bg-[#d4af37]/20 text-[#d4af37] disabled:opacity-50 disabled:cursor-not-allowed font-bold py-3 rounded-sm transition-colors uppercase tracking-widest text-xs"
+              >
+                Initialize Node
               </button>
             </div>
           </div>
