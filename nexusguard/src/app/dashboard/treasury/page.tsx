@@ -3,12 +3,55 @@
 import { useState, useEffect } from 'react'
 import { ethers } from 'ethers'
 import { Loader2, RefreshCw } from 'lucide-react'
+import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
 
 export default function TreasuryPage() {
   const [balance, setBalance] = useState<string>('Loading...')
   const [recipient, setRecipient] = useState('')
   const [amount, setAmount] = useState('')
   const [isSending, setIsSending] = useState(false)
+  const [transactions, setTransactions] = useState<any[]>([])
+  const [chartData, setChartData] = useState<any[]>([])
+  const [userAddress, setUserAddress] = useState<string>('')
+
+  const fetchTransactions = async (address: string, currentBalance: number) => {
+    try {
+      const res = await fetch(`https://testnet.arcscan.app/api?module=account&action=tokentx&contractaddress=0x3600000000000000000000000000000000000000&address=${address}&page=1&offset=10&sort=desc`)
+      const data = await res.json()
+      if (data.status === "1" && data.result) {
+        setTransactions(data.result)
+        
+        let runningBalance = currentBalance;
+        const history = [];
+        history.push({ name: 'Now', balance: runningBalance });
+
+        for (let i = 0; i < data.result.length; i++) {
+          const tx = data.result[i];
+          const isReceive = tx.to.toLowerCase() === address.toLowerCase();
+          const amount = parseFloat(ethers.formatUnits(tx.value, 6));
+          
+          if (isReceive) {
+            runningBalance -= amount;
+          } else {
+            runningBalance += amount;
+          }
+          
+          const date = new Date(parseInt(tx.timeStamp) * 1000);
+          history.push({
+            name: `${date.getHours()}:${date.getMinutes().toString().padStart(2, '0')}`,
+            balance: runningBalance > 0 ? runningBalance : 0
+          });
+        }
+        
+        setChartData(history.reverse());
+      } else {
+        setTransactions([])
+        setChartData([])
+      }
+    } catch (err) {
+      console.error(err)
+    }
+  }
 
   const fetchBalance = async (autoSwitch = false) => {
     try {
@@ -63,7 +106,10 @@ export default function TreasuryPage() {
           const rawBalance = await contract.balanceOf(accounts[0]);
           // USDC ERC-20 uses 6 decimals
           const formatted = ethers.formatUnits(rawBalance, 6)
-          setBalance(parseFloat(formatted).toFixed(2) + ' USDC')
+          const numFormatted = parseFloat(formatted)
+          setBalance(numFormatted.toFixed(2) + ' USDC')
+          setUserAddress(accounts[0])
+          fetchTransactions(accounts[0], numFormatted)
         }
       } else {
         setBalance('0.0000 USDC (No Wallet)')
@@ -141,27 +187,6 @@ export default function TreasuryPage() {
     }
   }
 
-  const mockTransactions = [
-    { id: 'tx_01', date: '2026-10-26 14:30', type: 'Payment', amount: '-2,500.00 USDC', address: '0x456...def', desc: 'Job #002 Payment', hash: '0xabc...123' },
-    { id: 'tx_02', date: '2026-10-25 09:15', type: 'Deposit', amount: '+10,000.00 USDC', address: '0x789...ghi', desc: 'Treasury Top-up', hash: '0xdef...456' },
-    { id: 'tx_03', date: '2026-10-24 16:45', type: 'Yield', amount: '+12.50 USDC', address: 'Aave V3', desc: 'Lending Yield', hash: '0xghi...789' },
-    { id: 'tx_04', date: '2026-10-23 11:20', type: 'Payment', amount: '-1,200.00 USDC', address: '0x123...abc', desc: 'Job #001 Payment', hash: '0xjkl...012' },
-  ]
-
-  const getTypeStyle = (type: string) => {
-    switch(type) {
-      case 'Deposit': return 'text-emerald-400 border-emerald-400/30 bg-emerald-400/5'
-      case 'Withdrawal': return 'text-red-400 border-red-400/30 bg-red-400/5'
-      case 'Payment': return 'text-[#d4af37] border-[#d4af37]/30 bg-[#d4af37]/5'
-      case 'Yield': return 'text-purple-400 border-purple-400/30 bg-purple-400/5'
-      default: return 'text-gray-400 border-gray-400/30 bg-gray-400/5'
-    }
-  }
-
-  const getAmountColor = (amount: string) => {
-    return amount.startsWith('+') ? 'text-emerald-400' : 'text-gray-300'
-  }
-
   return (
     <div className="space-y-8 font-mono">
       <div className="flex justify-between items-end border-b border-gray-800 pb-4">
@@ -194,7 +219,7 @@ export default function TreasuryPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left Col: Send & Chart */}
-        <div className="space-y-6 lg:col-span-1">
+        <div className="space-y-6 lg:col-span-1 flex flex-col">
           {/* Quick Send Form */}
           <div className="bg-gray-900/40 border border-gray-800 rounded-sm p-6 relative">
             {/* Corner Accents */}
@@ -252,13 +277,25 @@ export default function TreasuryPage() {
             </form>
           </div>
 
-          {/* Treasury Chart Mock */}
-          <div className="bg-gray-900/40 border border-gray-800 rounded-sm p-6 h-64 flex flex-col relative">
+          {/* Treasury Chart Real */}
+          <div className="bg-gray-900/40 border border-gray-800 rounded-sm p-6 flex-1 flex flex-col relative min-h-[250px]">
             <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4 border-b border-gray-800 pb-2">BALANCE HISTORY</h3>
-            <div className="flex-1 bg-black/30 border border-gray-800 rounded-sm flex flex-col items-center justify-center relative overflow-hidden">
-              {/* Fake grid background for chart */}
-              <div className="absolute inset-0" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px)', backgroundSize: '20px 20px' }}></div>
-              <div className="text-gray-500 text-xs tracking-widest z-10">[CHART_CANVAS_INITIALIZED]</div>
+            <div className="flex-1 w-full h-full min-h-[200px]">
+              {chartData.length > 0 ? (
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={chartData}>
+                    <XAxis dataKey="name" stroke="#4b5563" fontSize={10} tickLine={false} axisLine={false} />
+                    <YAxis stroke="#4b5563" fontSize={10} tickLine={false} axisLine={false} width={40} />
+                    <Tooltip 
+                      contentStyle={{ backgroundColor: '#0a0e1a', border: '1px solid #1f2937', borderRadius: '4px', fontSize: '12px' }}
+                      itemStyle={{ color: '#d4af37' }}
+                    />
+                    <Line type="monotone" dataKey="balance" stroke="#d4af37" strokeWidth={2} dot={false} activeDot={{ r: 4, fill: '#d4af37' }} />
+                  </LineChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="flex items-center justify-center h-full text-gray-500 text-xs">No data available</div>
+              )}
             </div>
           </div>
         </div>
@@ -282,21 +319,33 @@ export default function TreasuryPage() {
                 </tr>
               </thead>
               <tbody className="text-xs">
-                {mockTransactions.map((tx) => (
-                  <tr key={tx.id} className="border-b border-gray-800/50 hover:bg-[#d4af37]/5 transition-colors">
-                    <td className="py-4 text-gray-400">{tx.date}</td>
-                    <td className="py-4">
-                      <span className={`px-2 py-1 rounded-sm border text-[10px] font-bold uppercase tracking-wider ${getTypeStyle(tx.type)}`}>
-                        {tx.type}
-                      </span>
-                    </td>
-                    <td className="py-4 text-gray-300">{tx.desc}</td>
-                    <td className="py-4 text-gray-500 font-mono text-xs">{tx.address}</td>
-                    <td className={`py-4 text-right font-bold ${getAmountColor(tx.amount)}`}>
-                      {tx.amount}
-                    </td>
+                {transactions.length === 0 ? (
+                  <tr>
+                    <td colSpan={5} className="py-8 text-center text-gray-500">No transactions found</td>
                   </tr>
-                ))}
+                ) : transactions.map((tx) => {
+                  const isReceive = tx.to.toLowerCase() === userAddress.toLowerCase()
+                  const type = isReceive ? 'Receive' : 'Send'
+                  const address = isReceive ? tx.from : tx.to
+                  const amount = ethers.formatUnits(tx.value, 6)
+                  const date = new Date(parseInt(tx.timeStamp) * 1000).toLocaleString()
+
+                  return (
+                    <tr key={tx.hash} className="border-b border-gray-800/50 hover:bg-[#d4af37]/5 transition-colors">
+                      <td className="py-4 text-gray-400">{date}</td>
+                      <td className="py-4">
+                        <span className={`px-2 py-1 rounded-sm border text-[10px] font-bold uppercase tracking-wider ${isReceive ? 'text-emerald-400 border-emerald-400/30 bg-emerald-400/5' : 'text-[#d4af37] border-[#d4af37]/30 bg-[#d4af37]/5'}`}>
+                          {type}
+                        </span>
+                      </td>
+                      <td className="py-4 text-gray-300">{isReceive ? 'Received USDC' : 'Sent USDC'}</td>
+                      <td className="py-4 text-gray-500 font-mono text-xs">{address.slice(0,6)}...{address.slice(-4)}</td>
+                      <td className={`py-4 text-right font-bold ${isReceive ? 'text-emerald-400' : 'text-gray-300'}`}>
+                        {isReceive ? '+' : '-'}{parseFloat(amount).toFixed(2)} USDC
+                      </td>
+                    </tr>
+                  )
+                })}
               </tbody>
             </table>
           </div>
