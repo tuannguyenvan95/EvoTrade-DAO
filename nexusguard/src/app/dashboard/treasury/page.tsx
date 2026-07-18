@@ -17,10 +17,14 @@ export default function TreasuryPage() {
         const provider = new ethers.BrowserProvider((window as any).ethereum)
         const accounts = await provider.send("eth_requestAccounts", [])
         if (accounts.length > 0) {
-          const rawBalance = await provider.getBalance(accounts[0])
-          // Convert from Wei to ETH/ARC and format to 4 decimal places
-          const formatted = parseFloat(ethers.formatEther(rawBalance)).toFixed(4)
-          setBalance(formatted + ' USDC')
+          const usdcAddress = "0x3600000000000000000000000000000000000000";
+          const usdcAbi = ["function balanceOf(address owner) view returns (uint256)"];
+          const contract = new ethers.Contract(usdcAddress, usdcAbi, provider);
+          
+          const rawBalance = await contract.balanceOf(accounts[0]);
+          // USDC ERC-20 uses 6 decimals
+          const formatted = ethers.formatUnits(rawBalance, 6)
+          setBalance(parseFloat(formatted).toFixed(2) + ' USDC')
         }
       } else {
         setBalance('0.0000 USDC (No Wallet)')
@@ -61,25 +65,23 @@ export default function TreasuryPage() {
         const accounts = await ethereum.request({ method: 'eth_requestAccounts' })
         const from = accounts[0]
         
-        // Convert amount to Wei (10^18)
-        let txValue = ethers.parseUnits(amount, 18).toString(16) // Convert BigInt to Hex
-        txValue = '0x' + txValue
-
-        // Simulate a real Smart Contract call or transfer (requires gas)
-        const txHash = await ethereum.request({
-          method: 'eth_sendTransaction',
-          params: [
-            {
-              from: from,
-              to: recipient, // Real recipient
-              value: txValue,
-            },
-          ],
-        })
+        const provider = new ethers.BrowserProvider(ethereum)
+        const signer = await provider.getSigner()
         
-        alert(`Giao dịch gửi đi thành công!\nTxHash: ${txHash}`)
+        const usdcAddress = "0x3600000000000000000000000000000000000000";
+        const usdcAbi = ["function transfer(address to, uint amount) returns (bool)"];
+        const contract = new ethers.Contract(usdcAddress, usdcAbi, signer);
+
+        // USDC uses 6 decimals
+        const txAmount = ethers.parseUnits(amount, 6)
+        
+        const tx = await contract.transfer(recipient, txAmount)
+        await tx.wait() // wait for confirmation
+        
+        alert(`Giao dịch gửi đi thành công!\nTxHash: ${tx.hash}`)
         setRecipient('')
         setAmount('')
+        fetchBalance() // auto refresh after sending
       } else {
         alert("Vui lòng cài đặt ví Web3 (MetaMask)!")
       }

@@ -12,6 +12,7 @@ export function TopHeader() {
   const supabase = createClient()
   const [walletAddress, setWalletAddress] = useState<string | null>(null)
   const [isConnecting, setIsConnecting] = useState(false)
+  const [showWalletModal, setShowWalletModal] = useState(false)
 
   const { isMuted, toggleMute, playClick } = useAudio()
 
@@ -34,8 +35,14 @@ export function TopHeader() {
     }
   }
 
-  const connectWallet = async () => {
+  const connectWallet = () => {
+    playClick()
+    setShowWalletModal(true)
+  }
+
+  const connectMetaMask = async () => {
     try {
+      setShowWalletModal(false)
       setIsConnecting(true)
       const { ethereum } = window as any;
       if (!ethereum) {
@@ -44,6 +51,13 @@ export function TopHeader() {
         return;
       }
       playClick()
+      
+      // Force account selection for NEW connection
+      await ethereum.request({
+        method: 'wallet_requestPermissions',
+        params: [{ eth_accounts: {} }]
+      });
+      
       const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
       
       // Enforce Arc Testnet (Chain ID: 5042002 -> 0x4cebca)
@@ -177,6 +191,53 @@ export function TopHeader() {
           <span className="hidden sm:inline">Disconnect</span>
         </button>
       </div>
+
+      {/* Wallet Selection Modal */}
+      {showWalletModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
+          <div className="bg-[#0a0e1a] border border-[#d4af37]/30 rounded-xl max-w-sm w-full p-6 relative">
+            <button 
+              onClick={() => setShowWalletModal(false)}
+              className="absolute top-4 right-4 text-gray-500 hover:text-white"
+            >
+              ✕
+            </button>
+            <h2 className="text-xl font-bold text-white mb-6 font-space-grotesk">Connect Wallet</h2>
+            <div className="space-y-3">
+              <button 
+                onClick={connectMetaMask}
+                className="w-full bg-[#111] hover:bg-[#222] border border-gray-800 hover:border-[#d4af37] text-white p-4 rounded-lg flex items-center justify-between transition-all"
+              >
+                <div className="flex items-center gap-3">
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/3/36/MetaMask_Fox.svg" alt="MetaMask" className="w-8 h-8" />
+                  <span className="font-medium">MetaMask</span>
+                </div>
+                <span className="text-xs bg-[#d4af37]/20 text-[#d4af37] px-2 py-1 rounded">Popular</span>
+              </button>
+              
+              <button 
+                onClick={() => alert('WalletConnect integration coming soon!')}
+                className="w-full bg-[#111] hover:bg-[#222] border border-gray-800 hover:border-blue-500 text-white p-4 rounded-lg flex items-center gap-3 transition-all opacity-70"
+              >
+                <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                  <span className="text-white font-bold text-xs">WC</span>
+                </div>
+                <span className="font-medium">WalletConnect</span>
+              </button>
+              
+              <button 
+                onClick={() => alert('Coinbase Wallet integration coming soon!')}
+                className="w-full bg-[#111] hover:bg-[#222] border border-gray-800 hover:border-blue-600 text-white p-4 rounded-lg flex items-center gap-3 transition-all opacity-70"
+              >
+                <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+                  <span className="text-white font-bold text-xs">CB</span>
+                </div>
+                <span className="font-medium">Coinbase Wallet</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </header>
   )
 }
