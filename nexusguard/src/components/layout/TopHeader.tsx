@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import { ArrowLeft, Home, LogOut, Volume2, VolumeX, Wallet } from 'lucide-react'
+import { ArrowLeft, Home, LogOut, Volume2, VolumeX, Wallet, Droplets } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { ethers } from 'ethers'
@@ -149,6 +149,16 @@ export function TopHeader() {
           <div className="w-1.5 h-1.5 bg-[#d4af37] animate-pulse inline-block mr-2" />
           Arc Network (Testnet)
         </div>
+        <button 
+          onClick={() => {
+            playClick()
+            router.push('/dashboard/faucet')
+          }}
+          className="hidden md:flex text-emerald-400 text-sm font-medium border border-emerald-400/30 bg-emerald-400/5 hover:bg-emerald-400/10 transition-colors px-3 py-1 rounded-sm items-center gap-2 ml-2"
+        >
+          <Droplets className="w-4 h-4" />
+          Faucet
+        </button>
       </div>
 
       <div className="flex items-center gap-4">
