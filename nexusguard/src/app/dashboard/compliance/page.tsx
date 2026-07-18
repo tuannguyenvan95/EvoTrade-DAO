@@ -1,3 +1,5 @@
+import { Scale, FileText, Download, Activity } from 'lucide-react'
+
 export default function CompliancePage() {
   const mockInvoices = [
     { id: 'INV-2026-042', job: 'Frontend UI', amount: '$2,500.00', tax: '$0.00', total: '$2,500.00', status: 'Paid', date: 'Oct 26, 2026' },
@@ -7,29 +9,45 @@ export default function CompliancePage() {
   ]
 
   return (
-    <div className="space-y-8">
-      <div className="flex justify-between items-center">
+    <div className="space-y-8 font-mono">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-end border-b border-gray-800 pb-4 gap-4">
         <div>
-          <h1 className="text-3xl font-bold mb-2">Compliance & Invoices</h1>
-          <p className="text-gray-400">Automated tax rules and invoice generation.</p>
+          <h1 className="text-3xl font-space-grotesk font-bold text-[#d4af37] uppercase tracking-tight mb-1 flex items-center gap-3">
+            <Scale className="w-8 h-8 text-[#d4af37]" />
+            Compliance_&_Invoices
+          </h1>
+          <p className="text-gray-400 text-sm uppercase tracking-widest">Automated tax rules and document generation</p>
         </div>
+        <button className="border border-[#d4af37] bg-[#d4af37]/5 hover:bg-[#d4af37]/20 text-[#d4af37] px-6 py-2 rounded-sm font-bold uppercase tracking-widest text-xs transition-colors flex items-center gap-2">
+          <Activity className="w-4 h-4" />
+          Run Compliance Audit
+        </button>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Invoice Generator */}
-        <div className="bg-gray-900/40 border border-gray-800 rounded-2xl p-6 backdrop-blur-sm">
-          <h3 className="text-lg font-bold mb-4">Manual Invoice Generator</h3>
-          <p className="text-sm text-gray-400 mb-6">Create a one-off invoice. Taxes will be calculated automatically based on jurisdiction.</p>
+        <div className="bg-gray-900/40 border border-gray-800 rounded-sm p-6 relative">
+          {/* Corner accents */}
+          <div className="absolute top-0 left-0 w-1.5 h-1.5 border-t border-l border-current opacity-50 text-[#d4af37]" />
+          <div className="absolute top-0 right-0 w-1.5 h-1.5 border-t border-r border-current opacity-50 text-[#d4af37]" />
+          <div className="absolute bottom-0 left-0 w-1.5 h-1.5 border-b border-l border-current opacity-50 text-[#d4af37]" />
+          <div className="absolute bottom-0 right-0 w-1.5 h-1.5 border-b border-r border-current opacity-50 text-[#d4af37]" />
+
+          <div className="flex items-center gap-2 mb-6 border-b border-gray-800 pb-2">
+            <FileText className="w-4 h-4 text-[#d4af37]" />
+            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest">MANUAL_INVOICE_GENERATOR</h3>
+          </div>
+          <p className="text-[10px] text-gray-500 uppercase tracking-widest mb-6">Create a one-off invoice. Taxes calculated automatically based on jurisdiction.</p>
           
           <form className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm text-gray-400 mb-1">Provider Address / ID</label>
-                <input type="text" className="w-full bg-gray-800/50 border border-gray-700 rounded-xl px-4 py-2 text-white" />
+                <label className="block text-[10px] text-gray-500 uppercase tracking-widest mb-2">Provider Address / ID</label>
+                <input type="text" placeholder="0x..." className="w-full bg-black/50 border border-gray-700 rounded-sm px-4 py-2 text-sm focus:outline-none focus:border-[#d4af37] text-gray-300" />
               </div>
               <div>
-                <label className="block text-sm text-gray-400 mb-1">Jurisdiction</label>
-                <select className="w-full bg-gray-800/50 border border-gray-700 rounded-xl px-4 py-2 text-white">
+                <label className="block text-[10px] text-gray-500 uppercase tracking-widest mb-2">Jurisdiction</label>
+                <select className="w-full bg-black/50 border border-gray-700 rounded-sm px-4 py-2 text-sm focus:outline-none focus:border-[#d4af37] text-gray-300">
                   <option>United States (US)</option>
                   <option>Vietnam (VN)</option>
                   <option>Singapore (SG)</option>
@@ -37,43 +55,50 @@ export default function CompliancePage() {
               </div>
             </div>
             <div>
-              <label className="block text-sm text-gray-400 mb-1">Description</label>
-              <input type="text" className="w-full bg-gray-800/50 border border-gray-700 rounded-xl px-4 py-2 text-white" />
+              <label className="block text-[10px] text-gray-500 uppercase tracking-widest mb-2">Description</label>
+              <input type="text" placeholder="e.g. Smart Contract Audit" className="w-full bg-black/50 border border-gray-700 rounded-sm px-4 py-2 text-sm focus:outline-none focus:border-[#d4af37] text-gray-300" />
             </div>
             <div>
-              <label className="block text-sm text-gray-400 mb-1">Amount (USDC)</label>
-              <input type="number" className="w-full bg-gray-800/50 border border-gray-700 rounded-xl px-4 py-2 text-white" />
+              <label className="block text-[10px] text-gray-500 uppercase tracking-widest mb-2">Amount (USDC)</label>
+              <input type="number" placeholder="0.00" className="w-full bg-black/50 border border-gray-700 rounded-sm px-4 py-2 text-sm focus:outline-none focus:border-[#d4af37] text-emerald-400" />
             </div>
-            <button type="button" className="w-full bg-blue-600 hover:bg-blue-500 text-white font-semibold py-2.5 rounded-xl transition-colors mt-2">
+            <button type="button" className="w-full mt-6 border border-[#d4af37] bg-[#d4af37]/10 hover:bg-[#d4af37]/20 text-[#d4af37] font-bold py-3 rounded-sm transition-colors uppercase tracking-widest text-xs">
               Generate Draft
             </button>
           </form>
         </div>
 
         {/* Tax Summary */}
-        <div className="bg-gray-900/40 border border-gray-800 rounded-2xl p-6 backdrop-blur-sm">
-          <h3 className="text-lg font-bold mb-4">Tax Rules Summary</h3>
+        <div className="bg-gray-900/40 border border-gray-800 rounded-sm p-6 relative">
+          <div className="absolute top-0 left-0 w-1.5 h-1.5 border-t border-l border-gray-500" />
+          <div className="absolute top-0 right-0 w-1.5 h-1.5 border-t border-r border-gray-500" />
+          
+          <div className="flex items-center gap-2 mb-6 border-b border-gray-800 pb-2">
+            <Scale className="w-4 h-4 text-[#d4af37]" />
+            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest">TAX_RULES_SUMMARY</h3>
+          </div>
+          
           <div className="space-y-4">
-            <div className="p-4 rounded-xl border border-gray-800 bg-gray-800/30">
+            <div className="p-4 rounded-sm border border-gray-800 bg-black/30 hover:border-gray-600 transition-colors">
               <div className="flex justify-between items-center mb-2">
-                <h4 className="font-semibold text-white">US Contractors (W-9)</h4>
-                <span className="text-emerald-400 text-xs font-bold">Active</span>
+                <h4 className="font-bold text-gray-300 uppercase tracking-widest text-xs">US Contractors (W-9)</h4>
+                <span className="text-emerald-400 text-[10px] font-bold border border-emerald-400/30 bg-emerald-400/10 px-2 py-0.5 rounded-sm uppercase">Active</span>
               </div>
-              <p className="text-sm text-gray-400">0% withholding. Requires W-9 collection before first payment over $600.</p>
+              <p className="text-[10px] text-gray-500 uppercase tracking-widest">0% withholding. Requires W-9 collection before first payment over $600.</p>
             </div>
             
-            <div className="p-4 rounded-xl border border-gray-800 bg-gray-800/30">
+            <div className="p-4 rounded-sm border border-gray-800 bg-black/30 hover:border-gray-600 transition-colors">
               <div className="flex justify-between items-center mb-2">
-                <h4 className="font-semibold text-white">Vietnam (FCT)</h4>
-                <span className="text-emerald-400 text-xs font-bold">Active</span>
+                <h4 className="font-bold text-gray-300 uppercase tracking-widest text-xs">Vietnam (FCT)</h4>
+                <span className="text-emerald-400 text-[10px] font-bold border border-emerald-400/30 bg-emerald-400/10 px-2 py-0.5 rounded-sm uppercase">Active</span>
               </div>
-              <p className="text-sm text-gray-400">10% Foreign Contractor Tax applied to all service payments sent to VN residents.</p>
+              <p className="text-[10px] text-gray-500 uppercase tracking-widest">10% Foreign Contractor Tax applied to all service payments sent to VN residents.</p>
             </div>
             
             <div className="mt-6 pt-6 border-t border-gray-800">
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-400">Estimated Q4 Tax Liability</span>
-                <span className="text-white font-bold">$1,450.00 USDC</span>
+              <div className="flex justify-between text-xs uppercase tracking-widest">
+                <span className="text-gray-500">Estimated Q4 Tax Liability</span>
+                <span className="text-emerald-400 font-bold">$1,450.00 USDC</span>
               </div>
             </div>
           </div>
@@ -81,36 +106,48 @@ export default function CompliancePage() {
       </div>
 
       {/* Invoice List */}
-      <div className="bg-gray-900/40 border border-gray-800 rounded-2xl p-6 backdrop-blur-sm">
-        <h3 className="text-lg font-bold mb-6">Recent Invoices</h3>
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
+      <div className="bg-gray-900/40 border border-gray-800 rounded-sm p-6 relative">
+        <div className="absolute top-0 left-0 w-1.5 h-1.5 border-t border-l border-gray-500" />
+        <div className="absolute top-0 right-0 w-1.5 h-1.5 border-t border-r border-gray-500" />
+        
+        <div className="flex items-center gap-2 mb-6 border-b border-gray-800 pb-2">
+          <FileText className="w-4 h-4 text-[#d4af37]" />
+          <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest">RECENT_INVOICES_LOG</h3>
+        </div>
+        
+        <div className="overflow-x-auto custom-scrollbar">
+          <table className="w-full text-left border-collapse min-w-[800px]">
             <thead>
-              <tr className="border-b border-gray-800 text-gray-400 text-sm">
-                <th className="pb-3 font-medium">Invoice #</th>
-                <th className="pb-3 font-medium">Date</th>
-                <th className="pb-3 font-medium">Job / Desc</th>
-                <th className="pb-3 font-medium">Status</th>
-                <th className="pb-3 font-medium text-right">Total</th>
-                <th className="pb-3 font-medium text-center">Action</th>
+              <tr className="border-b border-gray-800 text-gray-500 text-[10px] uppercase tracking-widest">
+                <th className="pb-3 font-bold w-32">Invoice #</th>
+                <th className="pb-3 font-bold w-32">Date</th>
+                <th className="pb-3 font-bold">Job / Desc</th>
+                <th className="pb-3 font-bold w-24">Status</th>
+                <th className="pb-3 font-bold text-right w-32">Total</th>
+                <th className="pb-3 font-bold text-center w-32">Action</th>
               </tr>
             </thead>
-            <tbody className="text-sm">
+            <tbody className="text-xs">
               {mockInvoices.map((inv) => (
-                <tr key={inv.id} className="border-b border-gray-800/50 hover:bg-gray-800/20 transition-colors">
-                  <td className="py-4 text-white font-medium">{inv.id}</td>
-                  <td className="py-4 text-gray-400">{inv.date}</td>
-                  <td className="py-4 text-gray-300">{inv.job}</td>
+                <tr key={inv.id} className="border-b border-gray-800/50 hover:bg-[#d4af37]/5 transition-colors">
+                  <td className="py-4 text-gray-300 font-bold">{inv.id}</td>
+                  <td className="py-4 text-gray-500">{inv.date}</td>
+                  <td className="py-4 text-gray-400">{inv.job}</td>
                   <td className="py-4">
-                    <span className={`px-2 py-1 rounded text-xs font-medium ${
-                      inv.status === 'Paid' ? 'text-emerald-400 bg-emerald-400/10' : 'text-yellow-400 bg-yellow-400/10'
+                    <span className={`px-2 py-1 rounded-sm border text-[10px] font-bold uppercase tracking-wider ${
+                      inv.status === 'Paid' 
+                        ? 'text-emerald-400 border-emerald-400/30 bg-emerald-400/5' 
+                        : 'text-yellow-400 border-yellow-400/30 bg-yellow-400/5'
                     }`}>
                       {inv.status}
                     </span>
                   </td>
-                  <td className="py-4 text-right font-medium text-white">{inv.total}</td>
+                  <td className="py-4 text-right font-bold text-emerald-400">{inv.total}</td>
                   <td className="py-4 text-center">
-                    <button className="text-blue-400 hover:text-blue-300 text-sm">Download PDF</button>
+                    <button className="text-[#d4af37] hover:text-white transition-colors flex items-center justify-center gap-2 w-full">
+                      <Download className="w-3 h-3" />
+                      <span className="text-[10px] uppercase tracking-widest">PDF</span>
+                    </button>
                   </td>
                 </tr>
               ))}
@@ -121,3 +158,4 @@ export default function CompliancePage() {
     </div>
   )
 }
+
