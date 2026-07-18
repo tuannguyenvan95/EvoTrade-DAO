@@ -1,16 +1,27 @@
 'use client'
 
 import { useParams } from 'next/navigation'
+import { useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Check, Code, Link as LinkIcon, Loader2 } from 'lucide-react'
 
 export default function JobDetailPage() {
   const params = useParams()
   const id = params.id as string
 
+  // Initial State Setup
+  const initialStatus = id === 'job_002' ? 'Submitted' : 'Funded'
+  const [jobStatus, setJobStatus] = useState(initialStatus)
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
+  const [githubUrl, setGithubUrl] = useState('')
+  const [previewUrl, setPreviewUrl] = useState('')
+
   // Mock data based on ID
   const job = {
     id,
     title: id === 'job_002' ? 'Frontend Dashboard UI' : 'Smart Contract Audit',
-    status: id === 'job_002' ? 'Submitted' : 'Funded',
     amount: '2,500 USDC',
     provider: '0x456...def',
     description: 'Build a stunning Next.js App Router dashboard using Tailwind CSS. Must include dark mode glassmorphism elements and responsive charts.',
@@ -19,129 +30,251 @@ export default function JobDetailPage() {
     deadline: 'Oct 28, 2026'
   }
 
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!githubUrl || !previewUrl) return
+    
+    setIsSubmitting(true)
+    // Simulate transaction delay
+    setTimeout(() => {
+      setIsSubmitting(false)
+      setIsModalOpen(false)
+      setJobStatus('Submitted')
+    }, 2000)
+  }
+
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 font-mono">
       {/* Header */}
-      <div className="flex justify-between items-start">
+      <div className="flex justify-between items-end border-b border-gray-800 pb-4">
         <div>
-          <div className="flex items-center gap-3 mb-2">
-            <h1 className="text-3xl font-bold">{job.title}</h1>
-            <span className={`px-3 py-1 text-xs font-semibold rounded-full border ${job.status === 'Submitted' ? 'text-purple-400 bg-purple-400/10 border-purple-400/20' : 'text-blue-400 bg-blue-400/10 border-blue-400/20'}`}>
-              {job.status}
+          <div className="flex items-center gap-4 mb-2">
+            <h1 className="text-3xl font-space-grotesk font-bold text-[#d4af37] uppercase tracking-tight">{job.title}_</h1>
+            <span className={`px-3 py-1 text-[10px] uppercase tracking-widest font-bold border ${jobStatus === 'Submitted' ? 'text-purple-400 bg-purple-400/10 border-purple-400/30' : 'text-[#d4af37] bg-[#d4af37]/10 border-[#d4af37]/30'}`}>
+              {jobStatus}
             </span>
           </div>
-          <p className="text-gray-400">Job ID: {job.id} • ERC-8183 Escrow Contract</p>
+          <p className="text-gray-400 text-xs uppercase tracking-widest">JOB_ID: {job.id} | ERC-8183 ESCROW CONTRACT</p>
         </div>
         
-        {job.status === 'Submitted' && (
-          <button className="bg-purple-600 hover:bg-purple-500 text-white px-6 py-3 rounded-xl font-medium shadow-lg shadow-purple-500/25 transition-all">
-            Trigger AI Validation
+        {jobStatus === 'Submitted' && (
+          <button className="border border-purple-500 bg-purple-500/10 hover:bg-purple-500/20 text-purple-400 px-6 py-2.5 rounded-sm font-bold text-xs uppercase tracking-widest transition-colors flex items-center gap-2">
+            <div className="w-1.5 h-1.5 rounded-full bg-purple-400 animate-pulse" />
+            TRIGGER AI VALIDATION
           </button>
         )}
-        {job.status === 'Funded' && (
-          <button className="bg-blue-600 hover:bg-blue-500 text-white px-6 py-3 rounded-xl font-medium shadow-lg shadow-blue-500/25 transition-all">
-            Submit Deliverable
+        {jobStatus === 'Funded' && (
+          <button 
+            onClick={() => setIsModalOpen(true)}
+            className="border border-[#d4af37] bg-[#d4af37]/10 hover:bg-[#d4af37]/20 text-[#d4af37] px-6 py-2.5 rounded-sm font-bold text-xs uppercase tracking-widest transition-colors flex items-center gap-2"
+          >
+            <div className="w-1.5 h-1.5 rounded-full bg-[#d4af37] animate-pulse" />
+            SUBMIT DELIVERABLE
           </button>
         )}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left Column (Details + Action Area) */}
         <div className="lg:col-span-2 space-y-6">
-          <div className="bg-gray-900/40 border border-gray-800 rounded-2xl p-8 backdrop-blur-sm">
-            <h3 className="text-lg font-bold mb-4">Job Details</h3>
-            <p className="text-gray-300 leading-relaxed mb-6">{job.description}</p>
+          <div className="bg-gray-900/40 border border-gray-800 rounded-sm p-8 relative">
+            {/* Corner Accents */}
+            <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-gray-500" />
+            <div className="absolute top-0 right-0 w-2 h-2 border-t border-r border-gray-500" />
+            <div className="absolute bottom-0 left-0 w-2 h-2 border-b border-l border-gray-500" />
+            <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-gray-500" />
+
+            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">JOB DETAILS</h3>
+            <p className="text-gray-300 leading-relaxed mb-6 text-sm">{job.description}</p>
             
-            <h4 className="text-sm font-semibold text-gray-400 mb-3 uppercase tracking-wider">Requirements</h4>
-            <ul className="list-disc list-inside text-gray-300 space-y-2 mb-8">
+            <h4 className="text-[10px] font-bold text-gray-500 mb-3 uppercase tracking-widest border-b border-gray-800 pb-1">REQUIREMENTS</h4>
+            <ul className="list-disc list-inside text-gray-300 space-y-2 mb-8 text-sm">
               {job.requirements.map((req, i) => <li key={i}>{req}</li>)}
             </ul>
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6 pt-6 border-t border-gray-800">
               <div>
-                <div className="text-xs text-gray-500 mb-1">Budget</div>
-                <div className="font-bold text-emerald-400">{job.amount}</div>
+                <div className="text-[10px] text-gray-500 mb-1 uppercase tracking-widest">BUDGET</div>
+                <div className="font-bold text-[#d4af37] text-sm">{job.amount}</div>
               </div>
               <div>
-                <div className="text-xs text-gray-500 mb-1">Provider</div>
-                <div className="font-mono text-sm text-gray-300">{job.provider}</div>
+                <div className="text-[10px] text-gray-500 mb-1 uppercase tracking-widest">PROVIDER</div>
+                <div className="text-sm text-gray-300">{job.provider}</div>
               </div>
               <div>
-                <div className="text-xs text-gray-500 mb-1">Created</div>
+                <div className="text-[10px] text-gray-500 mb-1 uppercase tracking-widest">CREATED</div>
                 <div className="text-sm text-gray-300">{job.createdAt}</div>
               </div>
               <div>
-                <div className="text-xs text-gray-500 mb-1">Deadline</div>
+                <div className="text-[10px] text-gray-500 mb-1 uppercase tracking-widest">DEADLINE</div>
                 <div className="text-sm text-gray-300">{job.deadline}</div>
               </div>
             </div>
           </div>
 
-          {job.status === 'Submitted' && (
-            <div className="bg-gray-900/40 border border-gray-800 rounded-2xl p-8 backdrop-blur-sm">
-              <h3 className="text-lg font-bold mb-4">Submitted Deliverable</h3>
-              <div className="bg-gray-800/50 border border-gray-700 rounded-xl p-4 mb-4">
-                <p className="text-gray-300 text-sm">GitHub PR: <a href="#" className="text-blue-400 hover:underline">github.com/org/repo/pull/42</a></p>
-                <p className="text-gray-300 text-sm mt-2">Vercel Preview: <a href="#" className="text-blue-400 hover:underline">dashboard-preview-x7y.vercel.app</a></p>
+          {jobStatus === 'Submitted' && (
+            <motion.div 
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-[#d4af37]/5 border border-[#d4af37]/30 rounded-sm p-8 relative"
+            >
+               {/* Corner Accents */}
+              <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-[#d4af37]" />
+              <div className="absolute top-0 right-0 w-2 h-2 border-t border-r border-[#d4af37]" />
+              <div className="absolute bottom-0 left-0 w-2 h-2 border-b border-l border-[#d4af37]" />
+              <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-[#d4af37]" />
+
+              <h3 className="text-xs font-bold text-[#d4af37] uppercase tracking-widest mb-4">SUBMITTED DELIVERABLE</h3>
+              <div className="bg-black/50 border border-gray-800 rounded-sm p-4 mb-4 space-y-3">
+                <div className="flex items-center gap-3">
+                  <Code className="w-4 h-4 text-gray-400" />
+                  <span className="text-gray-400 text-xs">GitHub PR:</span>
+                  <a href={githubUrl || "#"} className="text-[#d4af37] hover:underline text-sm truncate">{githubUrl || "github.com/org/repo/pull/42"}</a>
+                </div>
+                <div className="flex items-center gap-3">
+                  <LinkIcon className="w-4 h-4 text-gray-400" />
+                  <span className="text-gray-400 text-xs">Preview:</span>
+                  <a href={previewUrl || "#"} className="text-[#d4af37] hover:underline text-sm truncate">{previewUrl || "dashboard-preview.vercel.app"}</a>
+                </div>
               </div>
-              <p className="text-gray-400 text-sm">Provider notes: "Completed all requirements. Dark mode works perfectly."</p>
-            </div>
+              <p className="text-gray-400 text-xs">Provider notes: "Completed all requirements. Code is ready for AI Validation."</p>
+            </motion.div>
           )}
         </div>
 
         {/* Right Column (Timeline) */}
         <div className="space-y-6">
-          <div className="bg-gray-900/40 border border-gray-800 rounded-2xl p-6 backdrop-blur-sm">
-            <h3 className="text-lg font-bold mb-6">Escrow Timeline</h3>
+          <div className="bg-gray-900/40 border border-gray-800 rounded-sm p-6 relative">
+            {/* Corner Accents */}
+            <div className="absolute top-0 left-0 w-1.5 h-1.5 border-t border-l border-gray-500" />
+            <div className="absolute top-0 right-0 w-1.5 h-1.5 border-t border-r border-gray-500" />
             
-            <div className="space-y-6 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-gray-700 before:to-transparent">
+            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-6 border-b border-gray-800 pb-2">ESCROW TIMELINE</h3>
+            
+            <div className="space-y-6 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-px before:bg-gradient-to-b before:from-[#d4af37] before:via-gray-800 before:to-transparent">
               {/* Step 1 */}
               <div className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
-                <div className="flex items-center justify-center w-10 h-10 rounded-full border-4 border-gray-900 bg-emerald-500 text-white shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">
-                  ✓
+                <div className="flex items-center justify-center w-8 h-8 border border-[#d4af37] bg-black text-[#d4af37] shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">
+                  <Check className="w-4 h-4" />
                 </div>
-                <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded-xl border border-gray-800 bg-gray-800/30">
-                  <div className="font-bold text-white mb-1">Created</div>
-                  <div className="text-xs text-gray-500">Oct 20, 14:00</div>
+                <div className="w-[calc(100%-3rem)] md:w-[calc(50%-2rem)] p-3 border border-[#d4af37]/30 bg-[#d4af37]/5">
+                  <div className="font-bold text-[#d4af37] text-xs uppercase tracking-wider mb-1">CREATED</div>
+                  <div className="text-[10px] text-gray-500">Oct 20, 14:00</div>
                 </div>
               </div>
 
               {/* Step 2 */}
               <div className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
-                <div className="flex items-center justify-center w-10 h-10 rounded-full border-4 border-gray-900 bg-blue-500 text-white shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">
+                <div className="flex items-center justify-center w-8 h-8 border border-[#d4af37] bg-black text-[#d4af37] shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10 font-bold">
                   $
                 </div>
-                <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded-xl border border-gray-800 bg-gray-800/30">
-                  <div className="font-bold text-white mb-1">Funded Escrow</div>
-                  <div className="text-xs text-gray-500">Oct 21, 09:30</div>
+                <div className="w-[calc(100%-3rem)] md:w-[calc(50%-2rem)] p-3 border border-[#d4af37]/30 bg-[#d4af37]/5">
+                  <div className="font-bold text-[#d4af37] text-xs uppercase tracking-wider mb-1">FUNDED ESCROW</div>
+                  <div className="text-[10px] text-gray-500">Oct 21, 09:30</div>
                 </div>
               </div>
 
               {/* Step 3 */}
               <div className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group">
-                <div className={`flex items-center justify-center w-10 h-10 rounded-full border-4 border-gray-900 ${job.status === 'Submitted' ? 'bg-purple-500 text-white' : 'bg-gray-800 text-gray-500'} shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10`}>
+                <div className={`flex items-center justify-center w-8 h-8 border shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10 font-bold transition-colors ${jobStatus === 'Submitted' ? 'border-[#d4af37] bg-[#d4af37] text-black' : 'border-gray-700 bg-black text-gray-600'}`}>
                   ↑
                 </div>
-                <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded-xl border border-gray-800 bg-gray-800/30">
-                  <div className="font-bold text-white mb-1">Submitted</div>
-                  <div className="text-xs text-gray-500">{job.status === 'Submitted' ? 'Oct 26, 16:45' : 'Pending'}</div>
+                <div className={`w-[calc(100%-3rem)] md:w-[calc(50%-2rem)] p-3 border transition-colors ${jobStatus === 'Submitted' ? 'border-[#d4af37]/30 bg-[#d4af37]/5' : 'border-gray-800 bg-gray-900/50'}`}>
+                  <div className={`font-bold text-xs uppercase tracking-wider mb-1 ${jobStatus === 'Submitted' ? 'text-[#d4af37]' : 'text-gray-500'}`}>SUBMITTED</div>
+                  <div className="text-[10px] text-gray-500">{jobStatus === 'Submitted' ? 'Oct 26, 16:45' : 'PENDING'}</div>
                 </div>
               </div>
               
               {/* Step 4 */}
               <div className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group">
-                <div className="flex items-center justify-center w-10 h-10 rounded-full border-4 border-gray-900 bg-gray-800 text-gray-500 shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">
-                  🤖
+                <div className="flex items-center justify-center w-8 h-8 border border-gray-700 bg-black text-gray-600 shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">
+                  <Code className="w-4 h-4" />
                 </div>
-                <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded-xl border border-gray-800 bg-gray-800/30 opacity-50">
-                  <div className="font-bold text-white mb-1">AI Validation</div>
-                  <div className="text-xs text-gray-500">Pending</div>
+                <div className="w-[calc(100%-3rem)] md:w-[calc(50%-2rem)] p-3 border border-gray-800 bg-gray-900/50 opacity-50">
+                  <div className="font-bold text-gray-500 text-xs uppercase tracking-wider mb-1">AI VALIDATION</div>
+                  <div className="text-[10px] text-gray-600">PENDING</div>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Modal Submit Deliverable */}
+      <AnimatePresence>
+        {isModalOpen && (
+          <>
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsModalOpen(false)}
+              className="fixed inset-0 bg-black/80 backdrop-blur-sm z-40"
+            />
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-lg bg-[#030712] border border-[#d4af37]/50 shadow-2xl shadow-[#d4af37]/10 p-6 z-50 rounded-sm"
+            >
+              {/* Corner Accents */}
+              <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-[#d4af37]" />
+              <div className="absolute top-0 right-0 w-2 h-2 border-t border-r border-[#d4af37]" />
+              <div className="absolute bottom-0 left-0 w-2 h-2 border-b border-l border-[#d4af37]" />
+              <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-[#d4af37]" />
+
+              <h2 className="text-xl font-space-grotesk font-bold text-[#d4af37] uppercase tracking-tight mb-2">Submit Deliverable_</h2>
+              <p className="text-gray-400 text-xs font-mono mb-6">Enter your repository and preview links to submit your work for AI Validation.</p>
+
+              <form onSubmit={handleSubmit} className="space-y-4 font-mono">
+                <div>
+                  <label className="block text-[10px] text-gray-400 uppercase tracking-widest mb-1.5">GitHub Pull Request URL</label>
+                  <input
+                    type="url"
+                    required
+                    value={githubUrl}
+                    onChange={(e) => setGithubUrl(e.target.value)}
+                    placeholder="https://github.com/..."
+                    className="w-full bg-black/50 border border-gray-700 rounded-sm px-4 py-2 text-gray-200 text-sm focus:outline-none focus:border-[#d4af37] transition-colors"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[10px] text-gray-400 uppercase tracking-widest mb-1.5">Live Preview URL (Vercel/Netlify)</label>
+                  <input
+                    type="url"
+                    required
+                    value={previewUrl}
+                    onChange={(e) => setPreviewUrl(e.target.value)}
+                    placeholder="https://..."
+                    className="w-full bg-black/50 border border-gray-700 rounded-sm px-4 py-2 text-gray-200 text-sm focus:outline-none focus:border-[#d4af37] transition-colors"
+                  />
+                </div>
+
+                <div className="flex gap-4 pt-4 border-t border-gray-800 mt-6">
+                  <button
+                    type="button"
+                    onClick={() => setIsModalOpen(false)}
+                    className="flex-1 border border-gray-700 hover:bg-gray-800 text-gray-300 px-4 py-2 text-xs uppercase tracking-widest transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="flex-1 border border-[#d4af37] bg-[#d4af37]/10 hover:bg-[#d4af37]/20 text-[#d4af37] px-4 py-2 text-xs uppercase tracking-widest transition-colors flex justify-center items-center gap-2"
+                  >
+                    {isSubmitting ? (
+                      <><Loader2 className="w-4 h-4 animate-spin" /> SUBMITTING...</>
+                    ) : (
+                      'CONFIRM SUBMISSION'
+                    )}
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </div>
   )
 }
