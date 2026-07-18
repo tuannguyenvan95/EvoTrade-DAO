@@ -15,7 +15,7 @@ export function Footer() {
         
         <div className="flex items-center gap-4">
           <Link 
-            href="https://x.com/BuildOnCircle" 
+            href="https://x.com/arc" 
             target="_blank" 
             rel="noopener noreferrer"
             className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:text-white hover:bg-gray-700 transition-all hover:scale-110"
@@ -26,7 +26,7 @@ export function Footer() {
             </svg>
           </Link>
           <Link 
-            href="https://discord.gg/buildoncircle" 
+            href="https://discord.gg/buildonarc" 
             target="_blank" 
             rel="noopener noreferrer"
             className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:text-white hover:bg-[#5865F2] transition-all hover:scale-110"
@@ -37,7 +37,7 @@ export function Footer() {
             </svg>
           </Link>
           <Link 
-            href="https://circle.com" 
+            href="https://www.arc.io/" 
             target="_blank" 
             rel="noopener noreferrer"
             className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:text-white hover:bg-blue-600 transition-all hover:scale-110"
