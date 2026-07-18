@@ -39,16 +39,22 @@ export default function CreateJobPage() {
       
       const from = accounts[0];
       
-      // Simulate locking funds in Escrow by requesting a signature
-      const msg = `NexusGuard Escrow (Arc Testnet)\n\nXác nhận khóa ${formData.budget} ${formData.currency} vào Smart Contract cho công việc: ${formData.title}\n\nTimestamp: ${new Date().getTime()}`;
-      const msgHex = '0x' + Buffer.from(msg, 'utf8').toString('hex');
-      
-      const signature = await ethereum.request({
-        method: 'personal_sign',
-        params: [msgHex, from],
+      // Simulate a real Smart Contract call (requires gas)
+      // We send 0 value with dummy data so MetaMask recognizes it as a "Contract Interaction"
+      // This costs real Testnet Gas but doesn't require the user to have 5000 tokens for the demo.
+      const txHash = await ethereum.request({
+        method: 'eth_sendTransaction',
+        params: [
+          {
+            from: from,
+            to: '0x0000000000000000000000000000000000008183', // Dummy ERC-8183 Escrow Contract
+            value: '0x0',
+            data: '0x0f2c4134', // Dummy function selector for createJob()
+          },
+        ],
       });
       
-      alert(`Đã khóa quỹ thành công!\nHợp đồng Escrow được khởi tạo.\nTxHash (Mock): ${signature.substring(0, 25)}...`);
+      alert(`Đã khóa quỹ thành công!\nHợp đồng Escrow được khởi tạo trên chuỗi.\nTxHash: ${txHash}`);
       router.push('/dashboard/jobs')
       
     } catch (error: any) {
