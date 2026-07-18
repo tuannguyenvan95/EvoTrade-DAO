@@ -83,7 +83,7 @@ export function LiveTreasuryChart() {
                 fontSize: '12px'
               }}
               itemStyle={{ color: '#d4af37' }}
-              formatter={(value: number) => [`$${value.toLocaleString()}`, 'Balance']}
+              formatter={(value: any) => [`$${Number(value).toLocaleString()}`, 'Balance']}
             />
             <Area
               type="monotone"
