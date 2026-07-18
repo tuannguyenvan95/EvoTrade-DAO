@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { ethers } from 'ethers'
-import { Loader2 } from 'lucide-react'
+import { Loader2, RefreshCw } from 'lucide-react'
 
 export default function TreasuryPage() {
   const [balance, setBalance] = useState<string>('Loading...')
@@ -10,28 +10,44 @@ export default function TreasuryPage() {
   const [amount, setAmount] = useState('')
   const [isSending, setIsSending] = useState(false)
 
+  const fetchBalance = async () => {
+    try {
+      setBalance('Updating...')
+      if (typeof window !== 'undefined' && (window as any).ethereum) {
+        const provider = new ethers.BrowserProvider((window as any).ethereum)
+        const accounts = await provider.send("eth_requestAccounts", [])
+        if (accounts.length > 0) {
+          const rawBalance = await provider.getBalance(accounts[0])
+          // Convert from Wei to ETH/ARC and format to 4 decimal places
+          const formatted = parseFloat(ethers.formatEther(rawBalance)).toFixed(4)
+          setBalance(formatted + ' USDC')
+        }
+      } else {
+        setBalance('0.0000 USDC (No Wallet)')
+      }
+    } catch (err) {
+      console.error("Failed to fetch balance:", err)
+      setBalance('Error fetching')
+    }
+  }
+
   // Fetch real balance from MetaMask
   useEffect(() => {
-    const fetchBalance = async () => {
-      try {
-        if (typeof window !== 'undefined' && (window as any).ethereum) {
-          const provider = new ethers.BrowserProvider((window as any).ethereum)
-          const accounts = await provider.send("eth_requestAccounts", [])
-          if (accounts.length > 0) {
-            const rawBalance = await provider.getBalance(accounts[0])
-            // Convert from Wei to ETH/ARC and format to 4 decimal places
-            const formatted = parseFloat(ethers.formatEther(rawBalance)).toFixed(4)
-            setBalance(formatted + ' USDC')
-          }
-        } else {
-          setBalance('0.0000 USDC (No Wallet)')
-        }
-      } catch (err) {
-        console.error("Failed to fetch balance:", err)
-        setBalance('Error fetching')
+    fetchBalance()
+
+    if (typeof window !== 'undefined' && (window as any).ethereum) {
+      const eth = (window as any).ethereum;
+      eth.on('accountsChanged', fetchBalance);
+      eth.on('chainChanged', fetchBalance);
+    }
+
+    return () => {
+      if (typeof window !== 'undefined' && (window as any).ethereum) {
+        const eth = (window as any).ethereum;
+        eth.removeListener('accountsChanged', fetchBalance);
+        eth.removeListener('chainChanged', fetchBalance);
       }
     }
-    fetchBalance()
   }, [])
 
   const handleQuickSend = async (e: React.FormEvent) => {
@@ -138,7 +154,12 @@ export default function TreasuryPage() {
             <div className="flex justify-between items-center mb-6 border-b border-gray-800 pb-2">
               <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest">QUICK SEND</h3>
               <div className="text-[10px] text-[#d4af37] uppercase tracking-widest flex flex-col items-end">
-                <span>Wallet Balance</span>
+                <span className="flex items-center gap-1">
+                  Wallet Balance
+                  <button onClick={fetchBalance} className="hover:text-white transition-colors" title="Refresh Balance">
+                    <RefreshCw className="w-3 h-3" />
+                  </button>
+                </span>
                 <span className="font-bold">{balance}</span>
               </div>
             </div>
