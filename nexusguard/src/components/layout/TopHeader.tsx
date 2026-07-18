@@ -16,7 +16,9 @@ export function TopHeader() {
   const { isMuted, toggleMute, playClick } = useAudio()
 
   useEffect(() => {
-    checkIfWalletIsConnected()
+    if (localStorage.getItem('walletDisconnected') !== 'true') {
+      checkIfWalletIsConnected()
+    }
   }, [])
 
   const checkIfWalletIsConnected = async () => {
@@ -44,6 +46,7 @@ export function TopHeader() {
       playClick()
       const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
       setWalletAddress(accounts[0]);
+      localStorage.removeItem('walletDisconnected');
     } catch (error) {
       console.error(error);
     } finally {
@@ -58,6 +61,7 @@ export function TopHeader() {
   const disconnectWallet = () => {
     playClick()
     setWalletAddress(null)
+    localStorage.setItem('walletDisconnected', 'true')
   }
 
   const handleSignOut = async () => {
@@ -115,7 +119,8 @@ export function TopHeader() {
             className="flex items-center gap-2 border border-[#d4af37]/30 hover:border-red-500/50 bg-[#d4af37]/5 hover:bg-red-500/10 px-3 py-1.5 rounded-sm transition-colors group cursor-pointer"
           >
             <Wallet className="w-4 h-4 text-[#d4af37] group-hover:text-red-400 transition-colors" />
-            <span className="text-sm font-mono text-gray-300 group-hover:text-red-400 group-hover:line-through transition-all">{formatAddress(walletAddress)}</span>
+            <span className="text-sm font-mono text-gray-300 group-hover:hidden">{formatAddress(walletAddress)}</span>
+            <span className="text-[10px] font-bold text-red-400 hidden group-hover:inline uppercase tracking-widest">DISCONNECT</span>
           </button>
         ) : (
           <button 
