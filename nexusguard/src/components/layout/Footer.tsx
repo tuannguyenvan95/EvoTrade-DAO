@@ -15,17 +15,18 @@ export function Footer() {
         
         <div className="flex items-center gap-4">
           <Link 
-            href="https://twitter.com/EvoTradeDAO" 
+            href="https://x.com/BuildOnCircle" 
             target="_blank" 
             rel="noopener noreferrer"
             className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:text-white hover:bg-gray-700 transition-all hover:scale-110"
+            title="X (Twitter)"
           >
             <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
               <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
             </svg>
           </Link>
           <Link 
-            href="#" 
+            href="https://discord.gg/buildoncircle" 
             target="_blank" 
             rel="noopener noreferrer"
             className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:text-white hover:bg-[#5865F2] transition-all hover:scale-110"
@@ -36,7 +37,7 @@ export function Footer() {
             </svg>
           </Link>
           <Link 
-            href="#" 
+            href="https://circle.com" 
             target="_blank" 
             rel="noopener noreferrer"
             className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:text-white hover:bg-blue-600 transition-all hover:scale-110"
