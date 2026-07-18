@@ -10,7 +10,7 @@ export default function TreasuryPage() {
   const [amount, setAmount] = useState('')
   const [isSending, setIsSending] = useState(false)
 
-  const fetchBalance = async () => {
+  const fetchBalance = async (autoSwitch = false) => {
     try {
       setBalance('Updating...')
       if (typeof window !== 'undefined' && (window as any).ethereum) {
@@ -19,20 +19,21 @@ export default function TreasuryPage() {
         
         if (accounts.length > 0) {
           const chainId = await ethereum.request({ method: 'eth_chainId' })
-          if (chainId !== '0x4cebca') {
+          if (chainId.toLowerCase() !== '0x4cef52') {
             setBalance('WRONG NETWORK')
-            try {
-              await ethereum.request({
-                method: 'wallet_switchEthereumChain',
-                params: [{ chainId: '0x4cebca' }],
-              })
-            } catch (switchError: any) {
+            if (autoSwitch) {
+              try {
+                await ethereum.request({
+                  method: 'wallet_switchEthereumChain',
+                  params: [{ chainId: '0x4cef52' }],
+                })
+              } catch (switchError: any) {
               if (switchError.code === 4902) {
                 try {
                   await ethereum.request({
                     method: 'wallet_addEthereumChain',
                     params: [{
-                      chainId: '0x4cebca',
+                      chainId: '0x4cef52',
                       chainName: 'Arc Testnet',
                       nativeCurrency: { name: 'USDC', symbol: 'USDC', decimals: 18 },
                       rpcUrls: ['https://rpc.testnet.arc.network'],
@@ -74,19 +75,19 @@ export default function TreasuryPage() {
 
   // Fetch real balance from MetaMask
   useEffect(() => {
-    fetchBalance()
+    fetchBalance(false)
 
     if (typeof window !== 'undefined' && (window as any).ethereum) {
       const eth = (window as any).ethereum;
-      eth.on('accountsChanged', fetchBalance);
-      eth.on('chainChanged', fetchBalance);
+      eth.on('accountsChanged', () => fetchBalance(false));
+      eth.on('chainChanged', () => fetchBalance(false));
     }
 
     return () => {
       if (typeof window !== 'undefined' && (window as any).ethereum) {
         const eth = (window as any).ethereum;
-        eth.removeListener('accountsChanged', fetchBalance);
-        eth.removeListener('chainChanged', fetchBalance);
+        eth.removeListener('accountsChanged', () => fetchBalance(false));
+        eth.removeListener('chainChanged', () => fetchBalance(false));
       }
     }
   }, [])
@@ -204,7 +205,7 @@ export default function TreasuryPage() {
               <div className="text-[10px] text-[#d4af37] uppercase tracking-widest flex flex-col items-end">
                 <span className="flex items-center gap-1">
                   Wallet Balance
-                  <button onClick={fetchBalance} className="hover:text-white transition-colors" title="Refresh Balance">
+                  <button onClick={() => fetchBalance(true)} className="hover:text-white transition-colors" title="Refresh Balance">
                     <RefreshCw className="w-3 h-3" />
                   </button>
                 </span>

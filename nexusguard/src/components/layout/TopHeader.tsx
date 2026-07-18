@@ -63,11 +63,11 @@ export function TopHeader() {
       
       const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
       
-      // Enforce Arc Testnet (Chain ID: 5042002 -> 0x4cebca)
+      // Enforce Arc Testnet (Chain ID: 5042002 -> 0x4cef52)
       try {
         await ethereum.request({
           method: 'wallet_switchEthereumChain',
-          params: [{ chainId: '0x4cebca' }],
+          params: [{ chainId: '0x4cef52' }],
         });
       } catch (switchError: any) {
         if (switchError.code === 4902) {
@@ -76,7 +76,7 @@ export function TopHeader() {
               method: 'wallet_addEthereumChain',
               params: [
                 {
-                  chainId: '0x4cebca',
+                  chainId: '0x4cef52',
                   chainName: 'Arc Testnet',
                   nativeCurrency: {
                     name: 'USDC',
