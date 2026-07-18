@@ -1,6 +1,7 @@
 'use client'
 
 import { motion, Variants } from 'framer-motion'
+import { LiveTreasuryChart } from '@/components/dashboard/LiveTreasuryChart'
 
 const containerVariants: Variants = {
   hidden: { opacity: 0 },
@@ -30,9 +31,21 @@ export default function DashboardPage() {
           <h1 className="text-4xl font-space-grotesk font-bold mb-1 text-[#d4af37] tracking-tight uppercase">Dashboard_</h1>
           <p className="text-gray-400 font-mono text-sm uppercase tracking-widest">Global Treasury & Agent Network Status</p>
         </div>
-        <div className="text-right hidden md:block">
-          <div className="text-xs text-gray-500 font-mono uppercase">System Time</div>
-          <div className="text-sm text-gray-300 font-mono">2026-07-18 16:23 UTC</div>
+        <div className="text-right hidden md:flex items-center gap-4">
+          <button 
+            onClick={() => {
+              // Mock Transaction Logic
+              alert("Mock Testnet Transaction Initiated!")
+            }}
+            className="border border-[#d4af37] bg-[#d4af37]/10 hover:bg-[#d4af37]/20 text-[#d4af37] px-4 py-2 rounded-sm font-mono text-xs uppercase tracking-widest transition-colors flex items-center gap-2"
+          >
+            <div className="w-1.5 h-1.5 rounded-full bg-[#d4af37] animate-pulse"></div>
+            Execute Test Tx
+          </button>
+          <div>
+            <div className="text-xs text-gray-500 font-mono uppercase">System Time</div>
+            <div className="text-sm text-gray-300 font-mono">2026-07-18 16:39 UTC</div>
+          </div>
         </div>
       </motion.div>
 
@@ -77,29 +90,8 @@ export default function DashboardPage() {
             <div className="text-[10px] text-gray-500 font-mono border border-gray-800 px-2 py-1 rounded-sm bg-gray-900/50">DATA.CHART.01</div>
           </div>
           
-          <div className="flex-1 bg-gray-900/40 border border-gray-800 rounded-sm flex items-center justify-center relative overflow-hidden group-hover:border-[#d4af37]/20 transition-colors">
-             <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGcgc3Ryb2tlPSIjZmZmZmZmIiBzdHJva2Utb3BhY2l0eT0iMC4wMyIgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIj48cGF0aCBkPSJNMCA0MGw0MC00MEgwdjQweiIvPjwvZz48L3N2Zz4=')] opacity-20"></div>
-             
-             <div className="absolute bottom-0 w-full h-1/2 bg-gradient-to-t from-[#d4af37]/5 to-transparent opacity-50 group-hover:opacity-100 transition-opacity duration-700"></div>
-             <svg className="absolute w-full h-full" preserveAspectRatio="none" viewBox="0 0 100 100">
-               <motion.path 
-                 d="M0,80 L10,75 L20,78 L30,60 L40,65 L50,45 L60,50 L70,30 L80,35 L90,15 L100,10" 
-                 fill="none" 
-                 stroke="rgba(212,175,55,0.6)" 
-                 strokeWidth="1.5"
-                 initial={{ pathLength: 0 }}
-                 animate={{ pathLength: 1 }}
-                 transition={{ duration: 2, ease: "easeInOut" }}
-               />
-               <motion.path 
-                 d="M0,80 L10,75 L20,78 L30,60 L40,65 L50,45 L60,50 L70,30 L80,35 L90,15 L100,10 L100,100 L0,100 Z" 
-                 fill="rgba(212,175,55,0.05)" 
-                 initial={{ opacity: 0 }}
-                 animate={{ opacity: 1 }}
-                 transition={{ delay: 2, duration: 1 }}
-               />
-             </svg>
-             <span className="text-[#d4af37] text-xs font-mono relative z-10 bg-[#030712]/80 border border-[#d4af37]/30 px-3 py-1.5 rounded-sm">LIVE FEED / STABLE</span>
+          <div className="flex-1 bg-gray-900/40 border border-gray-800 rounded-sm flex items-center justify-center relative group-hover:border-[#d4af37]/20 transition-colors">
+             <LiveTreasuryChart />
           </div>
         </motion.div>
 

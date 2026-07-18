@@ -2,14 +2,58 @@
 
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import { LogOut, ArrowLeft, Home, Volume2, VolumeX } from 'lucide-react'
+import { ArrowLeft, Home, LogOut, Volume2, VolumeX, Wallet } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { ethers } from 'ethers'
 import { useAudio } from '@/hooks/useAudio'
 
 export function TopHeader() {
   const router = useRouter()
   const supabase = createClient()
+  const [walletAddress, setWalletAddress] = useState<string | null>(null)
+  const [isConnecting, setIsConnecting] = useState(false)
 
   const { isMuted, toggleMute, playClick } = useAudio()
+
+  useEffect(() => {
+    checkIfWalletIsConnected()
+  }, [])
+
+  const checkIfWalletIsConnected = async () => {
+    try {
+      const { ethereum } = window as any;
+      if (!ethereum) return;
+      const accounts = await ethereum.request({ method: 'eth_accounts' });
+      if (accounts.length > 0) {
+        setWalletAddress(accounts[0]);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  const connectWallet = async () => {
+    try {
+      setIsConnecting(true)
+      const { ethereum } = window as any;
+      if (!ethereum) {
+        alert("Please install MetaMask!");
+        setIsConnecting(false)
+        return;
+      }
+      playClick()
+      const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+      setWalletAddress(accounts[0]);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsConnecting(false)
+    }
+  }
+
+  const formatAddress = (address: string) => {
+    return `${address.substring(0, 6)}...${address.substring(address.length - 4)}`
+  }
 
   const handleSignOut = async () => {
     playClick()
@@ -59,9 +103,23 @@ export function TopHeader() {
           {isMuted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
         </button>
 
-        <div className="w-8 h-8 bg-gradient-to-br from-gray-700 to-gray-900 border border-gray-600 flex items-center justify-center text-xs font-bold text-gray-300 cursor-pointer hover:border-[#d4af37] transition-colors rounded-sm">
-          ME
-        </div>
+        {walletAddress ? (
+          <div className="flex items-center gap-2 border border-[#d4af37]/30 bg-[#d4af37]/5 px-3 py-1.5 rounded-sm">
+            <Wallet className="w-4 h-4 text-[#d4af37]" />
+            <span className="text-sm font-mono text-gray-300">{formatAddress(walletAddress)}</span>
+          </div>
+        ) : (
+          <button 
+            onClick={connectWallet}
+            disabled={isConnecting}
+            className="flex items-center gap-2 border border-gray-600 hover:border-[#d4af37] bg-gray-900/50 hover:bg-[#d4af37]/10 px-3 py-1.5 rounded-sm transition-colors"
+          >
+            <Wallet className="w-4 h-4 text-gray-400" />
+            <span className="text-sm font-mono text-gray-300">
+              {isConnecting ? 'CONNECTING...' : 'CONNECT WALLET'}
+            </span>
+          </button>
+        )}
         <button 
           onClick={handleSignOut}
           className="flex items-center gap-2 text-gray-400 hover:text-red-400 transition-colors text-sm px-3 py-1.5 rounded-sm border border-transparent hover:border-red-500/30 hover:bg-red-500/10"
