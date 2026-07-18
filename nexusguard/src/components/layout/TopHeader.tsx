@@ -55,6 +55,11 @@ export function TopHeader() {
     return `${address.substring(0, 6)}...${address.substring(address.length - 4)}`
   }
 
+  const disconnectWallet = () => {
+    playClick()
+    setWalletAddress(null)
+  }
+
   const handleSignOut = async () => {
     playClick()
     await supabase.auth.signOut()
@@ -104,10 +109,14 @@ export function TopHeader() {
         </button>
 
         {walletAddress ? (
-          <div className="flex items-center gap-2 border border-[#d4af37]/30 bg-[#d4af37]/5 px-3 py-1.5 rounded-sm">
-            <Wallet className="w-4 h-4 text-[#d4af37]" />
-            <span className="text-sm font-mono text-gray-300">{formatAddress(walletAddress)}</span>
-          </div>
+          <button 
+            onClick={disconnectWallet}
+            title="Disconnect Wallet"
+            className="flex items-center gap-2 border border-[#d4af37]/30 hover:border-red-500/50 bg-[#d4af37]/5 hover:bg-red-500/10 px-3 py-1.5 rounded-sm transition-colors group cursor-pointer"
+          >
+            <Wallet className="w-4 h-4 text-[#d4af37] group-hover:text-red-400 transition-colors" />
+            <span className="text-sm font-mono text-gray-300 group-hover:text-red-400 group-hover:line-through transition-all">{formatAddress(walletAddress)}</span>
+          </button>
         ) : (
           <button 
             onClick={connectWallet}
