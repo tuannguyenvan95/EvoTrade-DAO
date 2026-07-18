@@ -45,6 +45,40 @@ export function TopHeader() {
       }
       playClick()
       const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+      
+      // Enforce Arc Testnet (Chain ID: 5042002 -> 0x4cebca)
+      try {
+        await ethereum.request({
+          method: 'wallet_switchEthereumChain',
+          params: [{ chainId: '0x4cebca' }],
+        });
+      } catch (switchError: any) {
+        if (switchError.code === 4902) {
+          try {
+            await ethereum.request({
+              method: 'wallet_addEthereumChain',
+              params: [
+                {
+                  chainId: '0x4cebca',
+                  chainName: 'Arc Testnet',
+                  nativeCurrency: {
+                    name: 'USDC',
+                    symbol: 'USDC',
+                    decimals: 18,
+                  },
+                  rpcUrls: ['https://rpc.testnet.arc.network'],
+                  blockExplorerUrls: ['https://testnet.arcscan.app'],
+                },
+              ],
+            });
+          } catch (addError) {
+            console.error(addError);
+          }
+        } else {
+          console.error(switchError);
+        }
+      }
+
       setWalletAddress(accounts[0]);
       localStorage.removeItem('walletDisconnected');
     } catch (error) {

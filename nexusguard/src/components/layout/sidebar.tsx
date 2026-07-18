@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, Users, Briefcase, Wallet, Bot, FileText, LogOut } from 'lucide-react';
+import { LayoutDashboard, Users, Briefcase, Wallet, Bot, FileText, LogOut, Droplets } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export function Sidebar() {
@@ -15,6 +15,7 @@ export function Sidebar() {
     { name: 'Treasury', href: '/dashboard/treasury', icon: Wallet },
     { name: 'Agents', href: '/dashboard/agents', icon: Bot },
     { name: 'Compliance', href: '/dashboard/compliance', icon: FileText },
+    { name: 'Faucet', href: '/dashboard/faucet', icon: Droplets },
   ];
 
   return (
