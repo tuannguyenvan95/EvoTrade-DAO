@@ -18,7 +18,7 @@ export default function TreasuryPage() {
         const accounts = await provider.send("eth_requestAccounts", [])
         if (accounts.length > 0) {
           const network = await provider.getNetwork()
-          if (network.chainId !== 5042002n) {
+          if (network.chainId !== BigInt(5042002)) {
             setBalance('Wrong Network')
             return
           }
