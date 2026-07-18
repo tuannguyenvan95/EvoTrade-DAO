@@ -1,8 +1,17 @@
 'use client'
 
+import { useState, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { ShieldCheck, Cpu, Scale, CreditCard, ShieldAlert, Activity, Terminal } from 'lucide-react'
 
 export default function AgentsPage() {
+  const [selectedAgent, setSelectedAgent] = useState<any | null>(null)
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
   const agents = [
     { name: 'Escrow', role: 'Smart Contract Mgmt', status: 'Active', uptime: '99.9%', color: 'blue', icon: ShieldCheck },
     { name: 'Validation', role: 'Deliverable QA', status: 'Active', uptime: '99.8%', color: 'purple', icon: Cpu },
@@ -70,7 +79,8 @@ export default function AgentsPage() {
           const Icon = agent.icon
           return (
             <div 
-              key={agent.name} 
+              key={agent.name}
+              onClick={() => setSelectedAgent(agent)}
               className={`group bg-gray-900/40 border rounded-sm p-5 relative transition-all duration-300 ${getAgentColorStyle(agent.color)} cursor-pointer hover:-translate-y-1`}
             >
               {/* Corner accents */}
@@ -141,6 +151,114 @@ export default function AgentsPage() {
           </table>
         </div>
       </div>
+
+      {/* Agent Configuration Modal */}
+      {selectedAgent && mounted && createPortal(
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4 font-mono">
+          <div className={`bg-[#0a0e1a] border border-current rounded-sm max-w-md w-full p-6 relative ${getAgentColorStyle(selectedAgent.color).split('group-hover')[0]}`}>
+            <button 
+              onClick={() => setSelectedAgent(null)}
+              className="absolute top-4 right-4 text-gray-500 hover:text-white transition-colors"
+            >
+              ✕
+            </button>
+            
+            <div className="flex items-center gap-4 mb-6 border-b border-gray-800 pb-4">
+              <div className={`w-12 h-12 rounded-full bg-black/50 flex items-center justify-center border border-current ${getAgentGlow(selectedAgent.color)}`}>
+                <selectedAgent.icon className="w-6 h-6" />
+              </div>
+              <div>
+                <h2 className="text-xl font-bold font-space-grotesk text-white tracking-widest uppercase">{selectedAgent.name} NODE</h2>
+                <p className="text-xs uppercase tracking-widest">{selectedAgent.role}</p>
+              </div>
+            </div>
+
+            <div className="space-y-6 text-gray-300">
+              {/* Dynamic Config Based on Agent */}
+              {selectedAgent.name === 'Validation' && (
+                <>
+                  <div>
+                    <label className="block text-[10px] text-gray-500 uppercase tracking-widest mb-2">Evaluation Strictness</label>
+                    <select className="w-full bg-black/50 border border-gray-700 rounded-sm p-2 text-sm focus:outline-none focus:border-purple-400">
+                      <option>Standard (Balanced)</option>
+                      <option>Lax (Fast Approval)</option>
+                      <option>Strict (High Quality)</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-[10px] text-gray-500 uppercase tracking-widest mb-2">Core AI Model</label>
+                    <select className="w-full bg-black/50 border border-gray-700 rounded-sm p-2 text-sm focus:outline-none focus:border-purple-400">
+                      <option>GPT-4o (OpenAI)</option>
+                      <option>Claude 3.5 Sonnet (Anthropic)</option>
+                      <option>Llama 3 70B (Meta)</option>
+                    </select>
+                  </div>
+                </>
+              )}
+              {selectedAgent.name === 'Escrow' && (
+                <>
+                  <div>
+                    <label className="block text-[10px] text-gray-500 uppercase tracking-widest mb-2">Auto-Lock Threshold (USDC)</label>
+                    <input type="number" defaultValue={100} className="w-full bg-black/50 border border-gray-700 rounded-sm p-2 text-sm focus:outline-none focus:border-blue-400" />
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <input type="checkbox" defaultChecked className="w-4 h-4 accent-blue-500" />
+                    <label className="text-sm">Enable Multi-Sig Fallback</label>
+                  </div>
+                </>
+              )}
+              {selectedAgent.name === 'Compliance' && (
+                <>
+                  <div className="flex items-center gap-3 mb-4">
+                    <input type="checkbox" defaultChecked className="w-4 h-4 accent-emerald-500" />
+                    <label className="text-sm">Enforce strict KYC for providers</label>
+                  </div>
+                  <div>
+                    <label className="block text-[10px] text-gray-500 uppercase tracking-widest mb-2">Tax Jurisdiction</label>
+                    <select className="w-full bg-black/50 border border-gray-700 rounded-sm p-2 text-sm focus:outline-none focus:border-emerald-400">
+                      <option>US (W-9 / 1099-NEC)</option>
+                      <option>EU (VAT Rules)</option>
+                      <option>Global (No specific tax form)</option>
+                    </select>
+                  </div>
+                </>
+              )}
+              {selectedAgent.name === 'Payment' && (
+                <>
+                  <div className="flex items-center gap-3 mb-4">
+                    <input type="checkbox" defaultChecked className="w-4 h-4 accent-yellow-500" />
+                    <label className="text-sm">Batch transactions to save gas</label>
+                  </div>
+                  <div>
+                    <label className="block text-[10px] text-gray-500 uppercase tracking-widest mb-2">Max Gas Fee Limit (Gwei)</label>
+                    <input type="number" defaultValue={50} className="w-full bg-black/50 border border-gray-700 rounded-sm p-2 text-sm focus:outline-none focus:border-yellow-400" />
+                  </div>
+                </>
+              )}
+              {selectedAgent.name === 'Risk' && (
+                <>
+                  <div>
+                    <label className="block text-[10px] text-gray-500 uppercase tracking-widest mb-2">Max Tx Value before Manual Review</label>
+                    <input type="number" defaultValue={10000} className="w-full bg-black/50 border border-gray-700 rounded-sm p-2 text-sm focus:outline-none focus:border-red-400" />
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <input type="checkbox" defaultChecked className="w-4 h-4 accent-red-500" />
+                    <label className="text-sm">Block known VPN/Tor exit nodes</label>
+                  </div>
+                </>
+              )}
+              
+              <button 
+                onClick={() => setSelectedAgent(null)}
+                className="w-full mt-6 border border-current bg-white/5 hover:bg-white/10 text-white font-bold py-3 rounded-sm transition-colors uppercase tracking-widest text-xs"
+              >
+                Apply Configuration
+              </button>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
     </div>
   )
 }
