@@ -14,15 +14,40 @@ export default function TreasuryPage() {
     try {
       setBalance('Updating...')
       if (typeof window !== 'undefined' && (window as any).ethereum) {
-        const provider = new ethers.BrowserProvider((window as any).ethereum)
-        const accounts = await provider.send("eth_requestAccounts", [])
+        const ethereum = (window as any).ethereum
+        const accounts = await ethereum.request({ method: 'eth_requestAccounts' })
+        
         if (accounts.length > 0) {
-          const network = await provider.getNetwork()
-          if (network.chainId !== BigInt(5042002)) {
-            setBalance('Wrong Network')
+          const chainId = await ethereum.request({ method: 'eth_chainId' })
+          if (chainId !== '0x4cebca') {
+            setBalance('WRONG NETWORK')
+            try {
+              await ethereum.request({
+                method: 'wallet_switchEthereumChain',
+                params: [{ chainId: '0x4cebca' }],
+              })
+            } catch (switchError: any) {
+              if (switchError.code === 4902) {
+                try {
+                  await ethereum.request({
+                    method: 'wallet_addEthereumChain',
+                    params: [{
+                      chainId: '0x4cebca',
+                      chainName: 'Arc Testnet',
+                      nativeCurrency: { name: 'USDC', symbol: 'USDC', decimals: 18 },
+                      rpcUrls: ['https://rpc.testnet.arc.network'],
+                      blockExplorerUrls: ['https://testnet.arcscan.app'],
+                    }]
+                  })
+                } catch (e) {
+                  console.error(e)
+                }
+              }
+            }
             return
           }
 
+          const provider = new ethers.BrowserProvider(ethereum)
           const usdcAddress = "0x3600000000000000000000000000000000000000";
           const usdcAbi = [{
             "constant": true,
