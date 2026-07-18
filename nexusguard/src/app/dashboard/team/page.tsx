@@ -15,25 +15,41 @@ export default function TeamPage() {
     { id: 4, name: 'Jordan Lee', email: 'jordan@acmedao.com', role: 'Treasury', score: 95, avatar: 'J' },
   ])
 
-  const handleInvite = (e: React.FormEvent) => {
+  const [previewLink, setPreviewLink] = useState<string | null>(null)
+
+  const handleInvite = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!email) return
     setIsInviting(true)
+    setPreviewLink(null)
     
-    // Simulate network delay
-    setTimeout(() => {
-      alert(`Đã gửi thư mời tới ${email} thành công!`)
-      setMockMembers([...mockMembers, {
-        id: Date.now(),
-        name: 'Pending Invite...',
-        email: email,
-        role: role,
-        score: 0,
-        avatar: '?'
-      }])
-      setEmail('')
+    try {
+      const res = await fetch('/api/team/invite', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, role })
+      })
+      const data = await res.json()
+
+      if (data.previewUrl) {
+        setPreviewLink(data.previewUrl)
+        setMockMembers([...mockMembers, {
+          id: Date.now(),
+          name: 'Pending Invite...',
+          email: email,
+          role: role,
+          score: 0,
+          avatar: '?'
+        }])
+        setEmail('')
+      } else {
+        alert("Lỗi: " + (data.error || "Không thể gửi thư."))
+      }
+    } catch (err) {
+      alert("Lỗi kết nối máy chủ.")
+    } finally {
       setIsInviting(false)
-    }, 1500)
+    }
   }
 
   return (
@@ -88,6 +104,23 @@ export default function TeamPage() {
             )}
           </button>
         </form>
+
+        {previewLink && (
+          <div className="mt-4 p-4 border border-[#d4af37]/30 bg-[#d4af37]/5 rounded-sm flex items-center justify-between">
+            <div className="flex flex-col">
+              <span className="text-[#d4af37] font-bold text-sm uppercase tracking-wide">📧 Email Invitation Sent!</span>
+              <span className="text-gray-400 text-xs font-mono mt-1">Một Email thật đã được gửi qua máy chủ SMTP.</span>
+            </div>
+            <a 
+              href={previewLink} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="bg-[#d4af37] text-black font-bold text-xs uppercase tracking-widest px-4 py-2 hover:bg-[#b08d20] transition-colors"
+            >
+              Xem Hộp Thư Đến
+            </a>
+          </div>
+        )}
       </div>
 
       {/* Members Grid */}
