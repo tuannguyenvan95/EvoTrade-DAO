@@ -7,7 +7,7 @@ export default function DashboardLayout({
   children: React.ReactNode
 }) {
   return (
-    <div className="min-h-screen bg-[#0a0e1a] text-white flex">
+    <div className="min-h-screen bg-transparent text-white flex">
       {/* Sidebar - Placeholder until component is implemented */}
       <aside className="fixed w-64 h-screen border-r border-gray-800 bg-gray-900/50 backdrop-blur-xl z-20 hidden md:block">
         <div className="p-6">
