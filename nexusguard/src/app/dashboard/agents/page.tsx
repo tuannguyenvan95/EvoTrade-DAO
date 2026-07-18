@@ -7,10 +7,52 @@ import { ShieldCheck, Cpu, Scale, CreditCard, ShieldAlert, Activity, Terminal } 
 export default function AgentsPage() {
   const [selectedAgent, setSelectedAgent] = useState<any | null>(null)
   const [mounted, setMounted] = useState(false)
+  const [agentConfigs, setAgentConfigs] = useState<Record<string, any>>({})
+  const [currentModalConfig, setCurrentModalConfig] = useState<any>({})
 
   useEffect(() => {
     setMounted(true)
+    const saved = localStorage.getItem('nexusguard_agent_configs')
+    if (saved) {
+      setAgentConfigs(JSON.parse(saved))
+    }
   }, [])
+
+  const getDefaultConfig = (name: string) => {
+    switch(name) {
+      case 'Validation': return { strictness: 'Standard (Balanced)', model: 'GPT-4o (OpenAI)' }
+      case 'Escrow': return { threshold: 100, multisig: true }
+      case 'Compliance': return { kyc: true, tax: 'US (W-9 / 1099-NEC)' }
+      case 'Payment': return { batch: true, gas: 50 }
+      case 'Risk': return { maxTx: 10000, blockVpn: true }
+      default: return {}
+    }
+  }
+
+  useEffect(() => {
+    if (selectedAgent) {
+      setCurrentModalConfig(agentConfigs[selectedAgent.name] || getDefaultConfig(selectedAgent.name))
+    }
+  }, [selectedAgent, agentConfigs])
+
+  const handleSaveConfig = () => {
+    if (!selectedAgent) return
+    const newConfigs = { ...agentConfigs, [selectedAgent.name]: currentModalConfig }
+    setAgentConfigs(newConfigs)
+    localStorage.setItem('nexusguard_agent_configs', JSON.stringify(newConfigs))
+    setSelectedAgent(null)
+  }
+
+  const getPrimaryConfigDisplay = (name: string, config: any) => {
+    switch(name) {
+      case 'Validation': return `Model: ${config.model.split(' ')[0]}`
+      case 'Escrow': return `Limit: ${config.threshold} USDC`
+      case 'Compliance': return `Tax: ${config.tax.split(' ')[0]}`
+      case 'Payment': return `Max Gas: ${config.gas} Gwei`
+      case 'Risk': return `Max Tx: $${config.maxTx}`
+      default: return ''
+    }
+  }
 
   const agents = [
     { name: 'Escrow', role: 'Smart Contract Mgmt', status: 'Active', uptime: '99.9%', color: 'blue', icon: ShieldCheck },
@@ -95,7 +137,11 @@ export default function AgentsPage() {
               </div>
               
               <h3 className="font-bold text-center uppercase tracking-widest text-xs mb-1 group-hover:text-white transition-colors">{agent.name}</h3>
-              <p className="text-[10px] text-gray-500 text-center uppercase tracking-wider mb-4 h-6 opacity-80 group-hover:opacity-100 transition-opacity">{agent.role}</p>
+              <p className="text-[10px] text-gray-500 text-center uppercase tracking-wider mb-2 h-6 opacity-80 group-hover:opacity-100 transition-opacity">{agent.role}</p>
+              
+              <div className="text-[9px] text-[#d4af37] text-center font-bold uppercase tracking-widest mb-4 h-4 opacity-70 group-hover:opacity-100 transition-opacity">
+                {mounted ? getPrimaryConfigDisplay(agent.name, agentConfigs[agent.name] || getDefaultConfig(agent.name)) : ''}
+              </div>
               
               <div className="flex justify-between items-center text-[10px] uppercase tracking-widest border-t border-current/20 pt-3 opacity-70 group-hover:opacity-100 transition-opacity">
                 <span>Uptime</span>
@@ -179,7 +225,11 @@ export default function AgentsPage() {
                 <>
                   <div>
                     <label className="block text-[10px] text-gray-500 uppercase tracking-widest mb-2">Evaluation Strictness</label>
-                    <select className="w-full bg-black/50 border border-gray-700 rounded-sm p-2 text-sm focus:outline-none focus:border-purple-400">
+                    <select 
+                      value={currentModalConfig.strictness}
+                      onChange={(e) => setCurrentModalConfig({...currentModalConfig, strictness: e.target.value})}
+                      className="w-full bg-black/50 border border-gray-700 rounded-sm p-2 text-sm focus:outline-none focus:border-purple-400"
+                    >
                       <option>Standard (Balanced)</option>
                       <option>Lax (Fast Approval)</option>
                       <option>Strict (High Quality)</option>
@@ -187,7 +237,11 @@ export default function AgentsPage() {
                   </div>
                   <div>
                     <label className="block text-[10px] text-gray-500 uppercase tracking-widest mb-2">Core AI Model</label>
-                    <select className="w-full bg-black/50 border border-gray-700 rounded-sm p-2 text-sm focus:outline-none focus:border-purple-400">
+                    <select 
+                      value={currentModalConfig.model}
+                      onChange={(e) => setCurrentModalConfig({...currentModalConfig, model: e.target.value})}
+                      className="w-full bg-black/50 border border-gray-700 rounded-sm p-2 text-sm focus:outline-none focus:border-purple-400"
+                    >
                       <option>GPT-4o (OpenAI)</option>
                       <option>Claude 3.5 Sonnet (Anthropic)</option>
                       <option>Llama 3 70B (Meta)</option>
@@ -199,10 +253,20 @@ export default function AgentsPage() {
                 <>
                   <div>
                     <label className="block text-[10px] text-gray-500 uppercase tracking-widest mb-2">Auto-Lock Threshold (USDC)</label>
-                    <input type="number" defaultValue={100} className="w-full bg-black/50 border border-gray-700 rounded-sm p-2 text-sm focus:outline-none focus:border-blue-400" />
+                    <input 
+                      type="number" 
+                      value={currentModalConfig.threshold}
+                      onChange={(e) => setCurrentModalConfig({...currentModalConfig, threshold: Number(e.target.value)})}
+                      className="w-full bg-black/50 border border-gray-700 rounded-sm p-2 text-sm focus:outline-none focus:border-blue-400" 
+                    />
                   </div>
                   <div className="flex items-center gap-3">
-                    <input type="checkbox" defaultChecked className="w-4 h-4 accent-blue-500" />
+                    <input 
+                      type="checkbox" 
+                      checked={currentModalConfig.multisig}
+                      onChange={(e) => setCurrentModalConfig({...currentModalConfig, multisig: e.target.checked})}
+                      className="w-4 h-4 accent-blue-500" 
+                    />
                     <label className="text-sm">Enable Multi-Sig Fallback</label>
                   </div>
                 </>
@@ -210,12 +274,21 @@ export default function AgentsPage() {
               {selectedAgent.name === 'Compliance' && (
                 <>
                   <div className="flex items-center gap-3 mb-4">
-                    <input type="checkbox" defaultChecked className="w-4 h-4 accent-emerald-500" />
+                    <input 
+                      type="checkbox" 
+                      checked={currentModalConfig.kyc}
+                      onChange={(e) => setCurrentModalConfig({...currentModalConfig, kyc: e.target.checked})}
+                      className="w-4 h-4 accent-emerald-500" 
+                    />
                     <label className="text-sm">Enforce strict KYC for providers</label>
                   </div>
                   <div>
                     <label className="block text-[10px] text-gray-500 uppercase tracking-widest mb-2">Tax Jurisdiction</label>
-                    <select className="w-full bg-black/50 border border-gray-700 rounded-sm p-2 text-sm focus:outline-none focus:border-emerald-400">
+                    <select 
+                      value={currentModalConfig.tax}
+                      onChange={(e) => setCurrentModalConfig({...currentModalConfig, tax: e.target.value})}
+                      className="w-full bg-black/50 border border-gray-700 rounded-sm p-2 text-sm focus:outline-none focus:border-emerald-400"
+                    >
                       <option>US (W-9 / 1099-NEC)</option>
                       <option>EU (VAT Rules)</option>
                       <option>Global (No specific tax form)</option>
@@ -226,12 +299,22 @@ export default function AgentsPage() {
               {selectedAgent.name === 'Payment' && (
                 <>
                   <div className="flex items-center gap-3 mb-4">
-                    <input type="checkbox" defaultChecked className="w-4 h-4 accent-yellow-500" />
+                    <input 
+                      type="checkbox" 
+                      checked={currentModalConfig.batch}
+                      onChange={(e) => setCurrentModalConfig({...currentModalConfig, batch: e.target.checked})}
+                      className="w-4 h-4 accent-yellow-500" 
+                    />
                     <label className="text-sm">Batch transactions to save gas</label>
                   </div>
                   <div>
                     <label className="block text-[10px] text-gray-500 uppercase tracking-widest mb-2">Max Gas Fee Limit (Gwei)</label>
-                    <input type="number" defaultValue={50} className="w-full bg-black/50 border border-gray-700 rounded-sm p-2 text-sm focus:outline-none focus:border-yellow-400" />
+                    <input 
+                      type="number" 
+                      value={currentModalConfig.gas}
+                      onChange={(e) => setCurrentModalConfig({...currentModalConfig, gas: Number(e.target.value)})}
+                      className="w-full bg-black/50 border border-gray-700 rounded-sm p-2 text-sm focus:outline-none focus:border-yellow-400" 
+                    />
                   </div>
                 </>
               )}
@@ -239,17 +322,27 @@ export default function AgentsPage() {
                 <>
                   <div>
                     <label className="block text-[10px] text-gray-500 uppercase tracking-widest mb-2">Max Tx Value before Manual Review</label>
-                    <input type="number" defaultValue={10000} className="w-full bg-black/50 border border-gray-700 rounded-sm p-2 text-sm focus:outline-none focus:border-red-400" />
+                    <input 
+                      type="number" 
+                      value={currentModalConfig.maxTx}
+                      onChange={(e) => setCurrentModalConfig({...currentModalConfig, maxTx: Number(e.target.value)})}
+                      className="w-full bg-black/50 border border-gray-700 rounded-sm p-2 text-sm focus:outline-none focus:border-red-400" 
+                    />
                   </div>
                   <div className="flex items-center gap-3">
-                    <input type="checkbox" defaultChecked className="w-4 h-4 accent-red-500" />
+                    <input 
+                      type="checkbox" 
+                      checked={currentModalConfig.blockVpn}
+                      onChange={(e) => setCurrentModalConfig({...currentModalConfig, blockVpn: e.target.checked})}
+                      className="w-4 h-4 accent-red-500" 
+                    />
                     <label className="text-sm">Block known VPN/Tor exit nodes</label>
                   </div>
                 </>
               )}
               
               <button 
-                onClick={() => setSelectedAgent(null)}
+                onClick={handleSaveConfig}
                 className="w-full mt-6 border border-current bg-white/5 hover:bg-white/10 text-white font-bold py-3 rounded-sm transition-colors uppercase tracking-widest text-xs"
               >
                 Apply Configuration
