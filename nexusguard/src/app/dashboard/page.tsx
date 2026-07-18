@@ -33,14 +33,44 @@ export default function DashboardPage() {
         </div>
         <div className="text-right hidden md:flex items-center gap-4">
           <button 
-            onClick={() => {
-              // Mock Transaction Logic
-              alert("Mock Testnet Transaction Initiated!")
+            onClick={async () => {
+              try {
+                const { ethereum } = window as any;
+                if (!ethereum) {
+                  alert("Vui lòng cài đặt và kết nối ví MetaMask trước!");
+                  return;
+                }
+                const accounts = await ethereum.request({ method: 'eth_accounts' });
+                if (!accounts || accounts.length === 0) {
+                  alert("Vui lòng kết nối ví ở góc trên bên phải trước khi Test!");
+                  return;
+                }
+                const from = accounts[0];
+                
+                // Yêu cầu ký một tin nhắn giả lập xác thực
+                const msg = `NexusGuard (Arc Testnet)\n\nXác nhận khởi tạo Agent Tự Trị (Autonomous Agent) cho Treasury.\n\nTimestamp: ${new Date().getTime()}`;
+                // Chuyển string sang hex để ký
+                const msgHex = '0x' + Buffer.from(msg, 'utf8').toString('hex');
+                
+                const signature = await ethereum.request({
+                  method: 'personal_sign',
+                  params: [msgHex, from],
+                });
+                
+                alert(`Mạng Arc Testnet phản hồi:\nKý xác nhận thành công!\nChữ ký Hash: ${signature.substring(0, 25)}...`);
+              } catch (error: any) {
+                console.error(error);
+                if (error.code === 4001) {
+                  alert("Bạn đã từ chối ký giao dịch.");
+                } else {
+                  alert(`Lỗi: ${error.message}`);
+                }
+              }
             }}
             className="border border-[#d4af37] bg-[#d4af37]/10 hover:bg-[#d4af37]/20 text-[#d4af37] px-4 py-2 rounded-sm font-mono text-xs uppercase tracking-widest transition-colors flex items-center gap-2"
           >
             <div className="w-1.5 h-1.5 rounded-full bg-[#d4af37] animate-pulse"></div>
-            Execute Test Tx
+            Test Agent Signature
           </button>
           <div>
             <div className="text-xs text-gray-500 font-mono uppercase">System Time</div>
