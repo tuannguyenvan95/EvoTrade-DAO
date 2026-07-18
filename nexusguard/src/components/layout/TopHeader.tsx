@@ -2,13 +2,17 @@
 
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import { LogOut, ArrowLeft, Home } from 'lucide-react'
+import { LogOut, ArrowLeft, Home, Volume2, VolumeX } from 'lucide-react'
+import { useAudio } from '@/hooks/useAudio'
 
 export function TopHeader() {
   const router = useRouter()
   const supabase = createClient()
 
+  const { isMuted, toggleMute, playClick } = useAudio()
+
   const handleSignOut = async () => {
+    playClick()
     await supabase.auth.signOut()
     router.push('/login')
   }
@@ -17,14 +21,20 @@ export function TopHeader() {
     <header className="h-16 border-b border-gray-800 bg-gray-900/40 backdrop-blur-md flex items-center justify-between px-8 sticky top-0 z-50">
       <div className="flex items-center gap-4">
         <button 
-          onClick={() => router.back()}
+          onClick={() => {
+            playClick()
+            router.back()
+          }}
           className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors text-sm px-2 py-1 rounded-lg hover:bg-gray-800/50"
         >
           <ArrowLeft className="w-4 h-4" />
           Back
         </button>
         <button 
-          onClick={() => router.push('/dashboard')}
+          onClick={() => {
+            playClick()
+            router.push('/dashboard')
+          }}
           className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors text-sm px-2 py-1 rounded-lg hover:bg-gray-800/50"
         >
           <Home className="w-4 h-4" />
@@ -38,6 +48,17 @@ export function TopHeader() {
       </div>
 
       <div className="flex items-center gap-4">
+        <button
+          onClick={() => {
+            playClick()
+            toggleMute()
+          }}
+          className="p-2 text-gray-400 hover:text-emerald-400 transition-colors rounded-lg hover:bg-gray-800/50"
+          title={isMuted ? "Unmute Sounds" : "Mute Sounds"}
+        >
+          {isMuted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
+        </button>
+
         <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center text-xs font-bold text-white shadow-lg shadow-blue-500/20 cursor-pointer hover:scale-105 transition-transform">
           Me
         </div>
