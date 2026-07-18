@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { ArrowLeft, Home, LogOut, Volume2, VolumeX, Wallet } from 'lucide-react'
 import { useState, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { ethers } from 'ethers'
 import { useAudio } from '@/hooks/useAudio'
 
@@ -13,10 +14,12 @@ export function TopHeader() {
   const [walletAddress, setWalletAddress] = useState<string | null>(null)
   const [isConnecting, setIsConnecting] = useState(false)
   const [showWalletModal, setShowWalletModal] = useState(false)
+  const [mounted, setMounted] = useState(false)
 
   const { isMuted, toggleMute, playClick } = useAudio()
 
   useEffect(() => {
+    setMounted(true)
     if (localStorage.getItem('walletDisconnected') !== 'true') {
       checkIfWalletIsConnected()
     }
@@ -193,7 +196,7 @@ export function TopHeader() {
       </div>
 
       {/* Wallet Selection Modal */}
-      {showWalletModal && (
+      {showWalletModal && mounted && createPortal(
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
           <div className="bg-[#0a0e1a] border border-[#d4af37]/30 rounded-xl max-w-sm w-full p-6 relative">
             <button 
@@ -236,7 +239,8 @@ export function TopHeader() {
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </header>
   )

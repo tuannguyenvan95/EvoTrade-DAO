@@ -17,8 +17,20 @@ export default function TreasuryPage() {
         const provider = new ethers.BrowserProvider((window as any).ethereum)
         const accounts = await provider.send("eth_requestAccounts", [])
         if (accounts.length > 0) {
+          const network = await provider.getNetwork()
+          if (network.chainId !== 5042002n) {
+            setBalance('Wrong Network')
+            return
+          }
+
           const usdcAddress = "0x3600000000000000000000000000000000000000";
-          const usdcAbi = ["function balanceOf(address owner) view returns (uint256)"];
+          const usdcAbi = [{
+            "constant": true,
+            "inputs": [{ "name": "_owner", "type": "address" }],
+            "name": "balanceOf",
+            "outputs": [{ "name": "balance", "type": "uint256" }],
+            "type": "function"
+          }];
           const contract = new ethers.Contract(usdcAddress, usdcAbi, provider);
           
           const rawBalance = await contract.balanceOf(accounts[0]);
@@ -69,7 +81,16 @@ export default function TreasuryPage() {
         const signer = await provider.getSigner()
         
         const usdcAddress = "0x3600000000000000000000000000000000000000";
-        const usdcAbi = ["function transfer(address to, uint amount) returns (bool)"];
+        const usdcAbi = [{
+          "constant": false,
+          "inputs": [
+            { "name": "_to", "type": "address" },
+            { "name": "_value", "type": "uint256" }
+          ],
+          "name": "transfer",
+          "outputs": [{ "name": "", "type": "bool" }],
+          "type": "function"
+        }];
         const contract = new ethers.Contract(usdcAddress, usdcAbi, signer);
 
         // USDC uses 6 decimals
