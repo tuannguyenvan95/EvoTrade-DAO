@@ -1,12 +1,12 @@
 @import "tailwindcss";
 
 :root {
-  --background: #0a0e1a;
-  --foreground: #ffffff;
-  --primary: #3b82f6;
-  --primary-light: #60a5fa;
+  --background: #030712; /* Deep midnight */
+  --foreground: #f3f4f6; /* Off white */
+  --primary: #d4af37; /* Architectural Gold / Bronze */
+  --primary-light: #fcd34d;
   --success: #10b981;
-  --accent: #8b5cf6;
+  --accent: #d4af37;
   --warning: #f59e0b;
   --danger: #ef4444;
 }
@@ -43,22 +43,22 @@ body {
   background: rgba(255, 255, 255, 0.2);
 }
 
-/* Glassmorphism utility */
+/* Blueprint Glass utility */
 .glass {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(3, 7, 18, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .glass-hover:hover {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.15);
+  background: rgba(212, 175, 55, 0.05);
+  border-color: rgba(212, 175, 55, 0.3);
 }
 
-/* Animated gradient text */
+/* Architectural gradient text */
 .gradient-text {
-  background: linear-gradient(135deg, #3b82f6, #8b5cf6, #10b981, #3b82f6);
+  background: linear-gradient(135deg, #f3f4f6, #d4af37, #fcd34d, #f3f4f6);
   background-size: 300% 300%;
   -webkit-background-clip: text;
   background-clip: text;
@@ -72,8 +72,8 @@ body {
 }
 
 /* Pulsing glow */
-.glow-blue {
-  box-shadow: 0 0 20px rgba(59, 130, 246, 0.15);
+.glow-gold {
+  box-shadow: 0 0 20px rgba(212, 175, 55, 0.15);
 }
 
 .glow-emerald {
