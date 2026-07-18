@@ -3,7 +3,7 @@ import { createClient } from '@/lib/supabase/server';
 import { completeJob, rejectJob, giveFeedback } from '@/lib/circle/transactions';
 import OpenAI from 'openai';
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+const openai = process.env.OPENAI_API_KEY ? new OpenAI({ apiKey: process.env.OPENAI_API_KEY }) : null;
 
 export class ValidatorAgent extends BaseAgent {
   constructor() {
@@ -45,7 +45,7 @@ export class ValidatorAgent extends BaseAgent {
     let feedback = "Mock validation passed.";
     let breakdown = { completeness: 20, quality: 20, standards: 20, requirements: 25 };
 
-    if (process.env.OPENAI_API_KEY) {
+    if (openai) {
       try {
         // 2. Call OpenAI with structured prompt
         const prompt = `You are a deliverable validator for a freelance job platform.
