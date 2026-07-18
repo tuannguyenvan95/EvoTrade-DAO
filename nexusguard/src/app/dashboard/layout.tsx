@@ -1,3 +1,6 @@
+import { TopHeader } from '@/components/layout/TopHeader'
+import { Footer } from '@/components/layout/Footer'
+
 export default function DashboardLayout({
   children,
 }: {
@@ -21,18 +24,14 @@ export default function DashboardLayout({
       </aside>
 
       {/* Main Content Area */}
-      <main className="md:ml-64 flex-1 min-h-screen">
-        {/* Top Header Placeholder */}
-        <header className="h-16 border-b border-gray-800 bg-gray-900/30 backdrop-blur-md flex items-center justify-between px-8 sticky top-0 z-10">
-          <div className="text-gray-400 text-sm">Arc Network (Testnet)</div>
-          <div className="flex items-center gap-4">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 to-purple-500"></div>
-          </div>
-        </header>
+      <main className="md:ml-64 flex-1 min-h-screen flex flex-col">
+        <TopHeader />
 
-        <div className="p-8 max-w-7xl mx-auto space-y-8">
+        <div className="p-8 max-w-7xl mx-auto w-full flex-1 space-y-8">
           {children}
         </div>
+        
+        <Footer />
       </main>
     </div>
   )
