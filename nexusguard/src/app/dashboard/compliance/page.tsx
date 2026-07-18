@@ -1,3 +1,5 @@
+'use client'
+
 import { Scale, FileText, Download, Activity, Loader2, CheckCircle2, AlertTriangle } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
