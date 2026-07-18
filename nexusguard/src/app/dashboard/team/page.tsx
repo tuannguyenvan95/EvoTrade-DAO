@@ -72,7 +72,6 @@ export default function TeamPage() {
       setIsInviting(false)
       setTerminalOutput([])
     }
-    }
   }
 
   return (
