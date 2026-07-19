@@ -134,6 +134,17 @@ export default function JobsPage() {
                   <div className="text-gray-300 font-mono text-xs">{job.date}</div>
                 </div>
               </div>
+
+              {/* Call to action on hover or based on status */}
+              <div className={`mt-4 pt-4 border-t border-gray-800 flex justify-end ${job.status === 'Submitted' ? 'opacity-100' : 'opacity-0 group-hover:opacity-100 transition-opacity'}`}>
+                <span className={`text-[10px] font-bold font-mono uppercase tracking-widest flex items-center gap-2 ${job.status === 'Submitted' ? 'text-purple-400' : 'text-[#d4af37]'}`}>
+                  {job.status === 'Submitted' ? (
+                    <><span className="w-1.5 h-1.5 rounded-full bg-purple-400 animate-pulse" /> CLICK TO VALIDATE DELIVERABLE &rarr;</>
+                  ) : (
+                    <>VIEW CONTRACT DETAILS &rarr;</>
+                  )}
+                </span>
+              </div>
             </div>
           </Link>
         ))}

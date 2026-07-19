@@ -154,6 +154,31 @@ export default function TeamPage() {
           </button>
         </form>
 
+        {/* Available Nodes to assign */}
+        <div className="mt-8 border-t border-gray-800 pt-6 flex-1">
+          <h4 className="text-[10px] font-mono text-gray-500 uppercase tracking-widest mb-4 flex items-center gap-2">
+            <BrainCircuit className="w-3 h-3" /> Available AI Nodes For Assignment
+          </h4>
+          <div className="grid grid-cols-2 gap-3">
+            {[
+              { name: 'SECURITY NODE v2.1', status: 'IDLE', util: '0%' },
+              { name: 'ANALYTICS NODE v1.0', status: 'IDLE', util: '0%' },
+              { name: 'COMPLIANCE NODE v3', status: 'ACTIVE', util: '45%' },
+              { name: 'RESEARCH NODE v1.5', status: 'MAINTENANCE', util: '--' },
+            ].map((node, i) => (
+              <div key={i} className="bg-black/30 border border-gray-800/50 rounded-sm p-3">
+                <div className="text-[10px] font-bold text-gray-300 font-mono mb-1">{node.name}</div>
+                <div className="flex justify-between items-center text-[9px] font-mono">
+                  <span className={node.status === 'IDLE' ? 'text-emerald-400' : node.status === 'ACTIVE' ? 'text-blue-400' : 'text-yellow-500'}>
+                    [{node.status}]
+                  </span>
+                  <span className="text-gray-500">Util: {node.util}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
         {/* Terminal Output Simulation */}
         {terminalOutput.length > 0 && (
           <div className="mt-4 p-4 bg-black/60 border border-gray-800 rounded-sm font-mono text-[10px] sm:text-xs space-y-1 h-32 overflow-y-auto">
