@@ -4,6 +4,7 @@ import { useParams } from 'next/navigation'
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Check, Code, Link as LinkIcon, Loader2 } from 'lucide-react'
+import { ErrorBoundary } from '@/components/ErrorBoundary'
 
 export default function JobDetailPage() {
   const params = useParams()
@@ -81,8 +82,9 @@ export default function JobDetailPage() {
   }
 
   return (
-    <div className="space-y-8 font-mono">
-      {/* Header */}
+    <ErrorBoundary>
+      <div className="space-y-8 font-mono">
+        {/* Header */}
       <div className="flex justify-between items-end border-b border-gray-800 pb-4">
         <div>
           <div className="flex items-center gap-4 mb-2">
@@ -376,6 +378,7 @@ export default function JobDetailPage() {
           </motion.div>
         </div>
       )}
-    </div>
+      </div>
+    </ErrorBoundary>
   )
 }
