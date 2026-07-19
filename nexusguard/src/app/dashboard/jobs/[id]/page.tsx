@@ -273,20 +273,23 @@ export default function JobDetailPage() {
       {/* Modal Submit Deliverable */}
       <AnimatePresence>
         {isModalOpen && (
-          <>
-            <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setIsModalOpen(false)}
-              className="fixed inset-0 bg-black/80 backdrop-blur-sm z-40"
-            />
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-lg bg-[#030712] border border-[#d4af37]/50 shadow-2xl shadow-[#d4af37]/10 p-6 z-50 rounded-sm"
-            >
+          <motion.div 
+            key="modal-backdrop"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setIsModalOpen(false)}
+            className="fixed inset-0 bg-black/80 backdrop-blur-sm z-40"
+          />
+        )}
+        {isModalOpen && (
+          <motion.div 
+            key="modal-content"
+            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+            className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-lg bg-[#030712] border border-[#d4af37]/50 shadow-2xl shadow-[#d4af37]/10 p-6 z-50 rounded-sm"
+          >
               {/* Corner Accents */}
               <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-[#d4af37]" />
               <div className="absolute top-0 right-0 w-2 h-2 border-t border-r border-[#d4af37]" />
@@ -342,21 +345,25 @@ export default function JobDetailPage() {
                 </div>
               </form>
             </motion.div>
-          </>
         )}
 
         {isAiValidating && (
-          <>
-            <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="fixed inset-0 bg-black/90 backdrop-blur-md z-40"
-            />
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-2xl bg-[#030712] border border-purple-500/50 shadow-2xl shadow-purple-500/20 p-6 z-50 rounded-sm font-mono"
-            >
+          <motion.div 
+            key="ai-backdrop"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/90 backdrop-blur-md z-40"
+          />
+        )}
+        {isAiValidating && (
+          <motion.div 
+            key="ai-content"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-2xl bg-[#030712] border border-purple-500/50 shadow-2xl shadow-purple-500/20 p-6 z-50 rounded-sm font-mono"
+          >
               <div className="flex items-center gap-3 mb-6 border-b border-gray-800 pb-4">
                 <Loader2 className="w-5 h-5 text-purple-400 animate-spin" />
                 <h2 className="text-xl font-space-grotesk font-bold text-purple-400 uppercase tracking-tight">Escrow Agent Verification_</h2>
@@ -376,7 +383,6 @@ export default function JobDetailPage() {
                 <div className="w-2 h-4 bg-purple-400 animate-pulse mt-2" />
               </div>
             </motion.div>
-          </>
         )}
       </AnimatePresence>
     </div>
