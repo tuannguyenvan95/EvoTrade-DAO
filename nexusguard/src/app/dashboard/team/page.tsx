@@ -109,8 +109,6 @@ export default function TeamPage() {
         </div>
       </div>
 
-      </div>
-
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Invite Section */}
         <div className="bg-gray-900/40 border border-gray-800 rounded-sm p-6 relative flex flex-col">
