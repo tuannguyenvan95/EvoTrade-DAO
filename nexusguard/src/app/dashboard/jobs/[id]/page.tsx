@@ -2,7 +2,7 @@
 
 import { useParams } from 'next/navigation'
 import { useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { Check, Code, Link as LinkIcon, Loader2 } from 'lucide-react'
 
 export default function JobDetailPage() {
@@ -271,120 +271,111 @@ export default function JobDetailPage() {
       </div>
 
       {/* Modal Submit Deliverable */}
-      <AnimatePresence>
-        {isModalOpen && (
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
           <motion.div 
-            key="modal-backdrop"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
             onClick={() => setIsModalOpen(false)}
-            className="fixed inset-0 bg-black/80 backdrop-blur-sm z-40"
+            className="absolute inset-0 bg-black/80 backdrop-blur-sm"
           />
-        )}
-        {isModalOpen && (
           <motion.div 
-            key="modal-content"
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-lg bg-[#030712] border border-[#d4af37]/50 shadow-2xl shadow-[#d4af37]/10 p-6 z-50 rounded-sm"
+            className="relative w-full max-w-lg bg-[#030712] border border-[#d4af37]/50 shadow-2xl shadow-[#d4af37]/10 p-6 rounded-sm"
           >
-              {/* Corner Accents */}
-              <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-[#d4af37]" />
-              <div className="absolute top-0 right-0 w-2 h-2 border-t border-r border-[#d4af37]" />
-              <div className="absolute bottom-0 left-0 w-2 h-2 border-b border-l border-[#d4af37]" />
-              <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-[#d4af37]" />
+            {/* Corner Accents */}
+            <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-[#d4af37]" />
+            <div className="absolute top-0 right-0 w-2 h-2 border-t border-r border-[#d4af37]" />
+            <div className="absolute bottom-0 left-0 w-2 h-2 border-b border-l border-[#d4af37]" />
+            <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-[#d4af37]" />
 
-              <h2 className="text-xl font-space-grotesk font-bold text-[#d4af37] uppercase tracking-tight mb-2">Submit Deliverable_</h2>
-              <p className="text-gray-400 text-xs font-mono mb-6">Enter your repository and preview links to submit your work for AI Validation.</p>
+            <h2 className="text-xl font-space-grotesk font-bold text-[#d4af37] uppercase tracking-tight mb-2">Submit Deliverable_</h2>
+            <p className="text-gray-400 text-xs font-mono mb-6">Enter your repository and preview links to submit your work for AI Validation.</p>
 
-              <form onSubmit={handleSubmit} className="space-y-4 font-mono">
-                <div>
-                  <label className="block text-[10px] text-gray-400 uppercase tracking-widest mb-1.5">GitHub Pull Request URL</label>
-                  <input
-                    type="url"
-                    required
-                    value={githubUrl}
-                    onChange={(e) => setGithubUrl(e.target.value)}
-                    placeholder="https://github.com/..."
-                    className="w-full bg-black/50 border border-gray-700 rounded-sm px-4 py-2 text-gray-200 text-sm focus:outline-none focus:border-[#d4af37] transition-colors"
-                  />
-                </div>
-                <div>
-                  <label className="block text-[10px] text-gray-400 uppercase tracking-widest mb-1.5">Live Preview URL (Vercel/Netlify)</label>
-                  <input
-                    type="url"
-                    required
-                    value={previewUrl}
-                    onChange={(e) => setPreviewUrl(e.target.value)}
-                    placeholder="https://..."
-                    className="w-full bg-black/50 border border-gray-700 rounded-sm px-4 py-2 text-gray-200 text-sm focus:outline-none focus:border-[#d4af37] transition-colors"
-                  />
-                </div>
+            <form onSubmit={handleSubmit} className="space-y-4 font-mono">
+              <div>
+                <label className="block text-[10px] text-gray-400 uppercase tracking-widest mb-1.5">GitHub Pull Request URL</label>
+                <input
+                  type="url"
+                  required
+                  value={githubUrl}
+                  onChange={(e) => setGithubUrl(e.target.value)}
+                  placeholder="https://github.com/..."
+                  className="w-full bg-black/50 border border-gray-700 rounded-sm px-4 py-2 text-gray-200 text-sm focus:outline-none focus:border-[#d4af37] transition-colors"
+                />
+              </div>
+              <div>
+                <label className="block text-[10px] text-gray-400 uppercase tracking-widest mb-1.5">Live Preview URL (Vercel/Netlify)</label>
+                <input
+                  type="url"
+                  required
+                  value={previewUrl}
+                  onChange={(e) => setPreviewUrl(e.target.value)}
+                  placeholder="https://..."
+                  className="w-full bg-black/50 border border-gray-700 rounded-sm px-4 py-2 text-gray-200 text-sm focus:outline-none focus:border-[#d4af37] transition-colors"
+                />
+              </div>
 
-                <div className="flex gap-4 pt-4 border-t border-gray-800 mt-6">
-                  <button
-                    type="button"
-                    onClick={() => setIsModalOpen(false)}
-                    className="flex-1 border border-gray-700 hover:bg-gray-800 text-gray-300 px-4 py-2 text-xs uppercase tracking-widest transition-colors"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="flex-1 border border-[#d4af37] bg-[#d4af37]/10 hover:bg-[#d4af37]/20 text-[#d4af37] px-4 py-2 text-xs uppercase tracking-widest transition-colors flex justify-center items-center gap-2"
-                  >
-                    {isSubmitting ? (
-                      <><Loader2 className="w-4 h-4 animate-spin" /> SUBMITTING...</>
-                    ) : (
-                      'CONFIRM SUBMISSION'
-                    )}
-                  </button>
-                </div>
-              </form>
-            </motion.div>
-        )}
+              <div className="flex gap-4 pt-4 border-t border-gray-800 mt-6">
+                <button
+                  type="button"
+                  onClick={() => setIsModalOpen(false)}
+                  className="flex-1 border border-gray-700 hover:bg-gray-800 text-gray-300 px-4 py-2 text-xs uppercase tracking-widest transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="flex-1 border border-[#d4af37] bg-[#d4af37]/10 hover:bg-[#d4af37]/20 text-[#d4af37] px-4 py-2 text-xs uppercase tracking-widest transition-colors flex justify-center items-center gap-2"
+                >
+                  {isSubmitting ? (
+                    <><Loader2 className="w-4 h-4 animate-spin" /> SUBMITTING...</>
+                  ) : (
+                    'CONFIRM SUBMISSION'
+                  )}
+                </button>
+              </div>
+            </form>
+          </motion.div>
+        </div>
+      )}
 
-        {isAiValidating && (
+      {/* Terminal Output Simulation */}
+      {isAiValidating && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
           <motion.div 
-            key="ai-backdrop"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/90 backdrop-blur-md z-40"
+            className="absolute inset-0 bg-black/90 backdrop-blur-md"
           />
-        )}
-        {isAiValidating && (
           <motion.div 
-            key="ai-content"
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
-            className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-2xl bg-[#030712] border border-purple-500/50 shadow-2xl shadow-purple-500/20 p-6 z-50 rounded-sm font-mono"
+            className="relative w-full max-w-2xl bg-[#030712] border border-purple-500/50 shadow-2xl shadow-purple-500/20 p-6 rounded-sm font-mono"
           >
-              <div className="flex items-center gap-3 mb-6 border-b border-gray-800 pb-4">
-                <Loader2 className="w-5 h-5 text-purple-400 animate-spin" />
-                <h2 className="text-xl font-space-grotesk font-bold text-purple-400 uppercase tracking-tight">Escrow Agent Verification_</h2>
-              </div>
-              
-              <div className="space-y-3 h-64 overflow-y-auto">
-                {validationLogs.map((log, index) => (
-                  <motion.div 
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    key={index}
-                    className={`text-sm ${log.includes('PASSED') || log.includes('COMPLETED') || log.includes('MET') || log.includes('CONFIRMED') ? 'text-emerald-400' : 'text-purple-300'}`}
-                  >
-                    {log}
-                  </motion.div>
-                ))}
-                <div className="w-2 h-4 bg-purple-400 animate-pulse mt-2" />
-              </div>
-            </motion.div>
-        )}
-      </AnimatePresence>
+            <div className="flex items-center gap-3 mb-6 border-b border-gray-800 pb-4">
+              <Loader2 className="w-5 h-5 text-purple-400 animate-spin" />
+              <h2 className="text-xl font-space-grotesk font-bold text-purple-400 uppercase tracking-tight">Escrow Agent Verification_</h2>
+            </div>
+            
+            <div className="space-y-3 h-64 overflow-y-auto">
+              {validationLogs.map((log, index) => (
+                <motion.div 
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  key={index}
+                  className={`text-sm ${log.includes('PASSED') || log.includes('COMPLETED') || log.includes('MET') || log.includes('CONFIRMED') ? 'text-emerald-400' : 'text-purple-300'}`}
+                >
+                  {log}
+                </motion.div>
+              ))}
+              <div className="w-2 h-4 bg-purple-400 animate-pulse mt-2" />
+            </div>
+          </motion.div>
+        </div>
+      )}
     </div>
   )
 }
