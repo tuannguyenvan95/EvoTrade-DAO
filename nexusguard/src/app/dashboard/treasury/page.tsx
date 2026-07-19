@@ -15,6 +15,29 @@ export default function TreasuryPage() {
   const [chartData, setChartData] = useState<any[]>([])
   const [userAddress, setUserAddress] = useState<string>('')
   const [terminalOutput, setTerminalOutput] = useState<string[]>([])
+  const [agentLogs, setAgentLogs] = useState<string[]>([
+    '> [TREASURY_AGENT] Monitoring Arc DeFi yields...',
+    '> [TREASURY_AGENT] Current Aave USDC APY: 4.2%',
+    '> [TREASURY_AGENT] Current Compound USDC APY: 5.1%',
+  ])
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setAgentLogs(prev => {
+        const actions = [
+          '> [TREASURY_AGENT] Rebalancing 10,000 USDC to Compound for higher yield.',
+          '> [TREASURY_AGENT] Autonomous transaction signed: 0x' + Math.random().toString(16).substring(2, 8).toUpperCase(),
+          '> [TREASURY_AGENT] Yield accrued today: +4.25 USDC.',
+          '> [TREASURY_AGENT] Detecting low liquidity in DAO main wallet...',
+          '> [TREASURY_AGENT] Harvesting yield and transferring back to treasury.'
+        ]
+        const randomAction = actions[Math.floor(Math.random() * actions.length)]
+        const newLogs = [...prev, randomAction]
+        return newLogs.slice(-5) // Keep last 5 logs
+      })
+    }, 5000)
+    return () => clearInterval(interval)
+  }, [])
 
   const fetchTransactions = async (address: string, currentBalance: number) => {
     try {
@@ -352,11 +375,39 @@ export default function TreasuryPage() {
           </div>
         </div>
 
-        {/* Right Col: Transactions */}
-        <div className="lg:col-span-2 bg-gray-900/40 border border-gray-800 rounded-sm p-6 flex flex-col relative">
-          {/* Corner Accents */}
-          <div className="absolute top-0 left-0 w-1.5 h-1.5 border-t border-l border-gray-500" />
-          <div className="absolute top-0 right-0 w-1.5 h-1.5 border-t border-r border-gray-500" />
+        {/* Right Col: Transactions & Agent Log */}
+        <div className="lg:col-span-2 flex flex-col space-y-6">
+          
+          {/* AI Treasury Agent Box */}
+          <div className="bg-blue-900/10 border border-blue-500/30 rounded-sm p-6 relative">
+            <div className="absolute top-0 left-0 w-1.5 h-1.5 border-t border-l border-blue-500" />
+            <div className="absolute top-0 right-0 w-1.5 h-1.5 border-t border-r border-blue-500" />
+            
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-xs font-bold text-blue-400 uppercase tracking-widest flex items-center gap-2">
+                <Activity className="w-3 h-3 text-blue-400" /> TREASURY AGENT: AUTONOMOUS YIELD MANAGER
+              </h3>
+              <div className="text-[10px] bg-blue-500/20 text-blue-300 px-2 py-1 rounded-sm border border-blue-500/50 flex items-center gap-2">
+                <div className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
+                AGENT WALLET: $50,000.00 USDC
+              </div>
+            </div>
+            
+            <div className="bg-black/60 border border-blue-900/50 rounded-sm p-4 font-mono text-[10px] space-y-2 h-32 overflow-y-auto">
+              {agentLogs.map((log, idx) => (
+                <div key={idx} className="text-blue-300 opacity-80">
+                  <span className="text-blue-500/50 mr-2">{new Date().toISOString().split('T')[1].slice(0,8)}</span> 
+                  {log}
+                </div>
+              ))}
+              <div className="w-2 h-3 bg-blue-400 animate-pulse mt-2" />
+            </div>
+          </div>
+
+          <div className="bg-gray-900/40 border border-gray-800 rounded-sm p-6 flex flex-col relative flex-1">
+            {/* Corner Accents */}
+            <div className="absolute top-0 left-0 w-1.5 h-1.5 border-t border-l border-gray-500" />
+            <div className="absolute top-0 right-0 w-1.5 h-1.5 border-t border-r border-gray-500" />
 
           <h3 className="text-xs font-bold text-[#d4af37] uppercase tracking-widest mb-4 border-b border-gray-800 pb-2">TRANSACTION LEDGER</h3>
           <div className="overflow-x-auto flex-1 custom-scrollbar">
@@ -408,6 +459,7 @@ export default function TreasuryPage() {
               </tbody>
             </table>
           </div>
+        </div>
         </div>
       </div>
     </div>

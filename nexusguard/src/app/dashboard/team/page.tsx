@@ -19,6 +19,32 @@ export default function TeamPage() {
   ])
 
   const [previewLink, setPreviewLink] = useState<string | null>(null)
+  
+  // M2M Ledger State
+  const [nanoLedger, setNanoLedger] = useState<any[]>([
+    { id: 'tx_1', from: 'VALIDATOR NODE', to: 'COMPLIANCE NODE', amount: '0.005 USDC', reason: 'Risk Analysis Data' },
+    { id: 'tx_2', from: 'ESCROW NODE', to: 'VALIDATOR NODE', amount: '0.002 USDC', reason: 'PR Validation Check' },
+    { id: 'tx_3', from: 'STRATEGY NODE', to: 'GUARDIAN NODE', amount: '0.010 USDC', reason: 'Anomaly Security Scan' },
+  ])
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setNanoLedger(prev => {
+        const nodes = ['VALIDATOR', 'COMPLIANCE', 'ESCROW', 'STRATEGY', 'GUARDIAN']
+        const from = nodes[Math.floor(Math.random() * nodes.length)]
+        let to = nodes[Math.floor(Math.random() * nodes.length)]
+        while (to === from) to = nodes[Math.floor(Math.random() * nodes.length)]
+        
+        const amount = (Math.random() * 0.05).toFixed(3)
+        const reasons = ['API Query', 'Risk Score', 'Audit Check', 'Data Sync', 'Consensus Vote']
+        const reason = reasons[Math.floor(Math.random() * reasons.length)]
+        
+        const newTx = { id: `tx_${Date.now()}`, from: `${from} NODE`, to: `${to} NODE`, amount: `${amount} USDC`, reason }
+        return [newTx, ...prev].slice(0, 8)
+      })
+    }, 4000)
+    return () => clearInterval(interval)
+  }, [])
 
   const handleInvite = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -83,9 +109,12 @@ export default function TeamPage() {
         </div>
       </div>
 
-      {/* Invite Section */}
-      <div className="bg-gray-900/40 border border-gray-800 rounded-sm p-6 relative">
-        {/* Corner Accents */}
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Invite Section */}
+        <div className="bg-gray-900/40 border border-gray-800 rounded-sm p-6 relative flex flex-col">
+          {/* Corner Accents */}
         <div className="absolute top-0 left-0 w-1.5 h-1.5 border-t border-l border-[#d4af37]/50" />
         <div className="absolute top-0 right-0 w-1.5 h-1.5 border-t border-r border-[#d4af37]/50" />
         <div className="absolute bottom-0 left-0 w-1.5 h-1.5 border-b border-l border-[#d4af37]/50" />
@@ -154,7 +183,39 @@ export default function TeamPage() {
               Xem Hộp Thư Đến
             </a>
           </div>
-        )}
+          )}
+        </div>
+
+        {/* M2M Nano-transactions Ledger */}
+        <div className="bg-gray-900/40 border border-gray-800 rounded-sm p-6 relative flex flex-col">
+          {/* Corner Accents */}
+          <div className="absolute top-0 left-0 w-1.5 h-1.5 border-t border-l border-emerald-500/50" />
+          <div className="absolute top-0 right-0 w-1.5 h-1.5 border-t border-r border-emerald-500/50" />
+          <div className="absolute bottom-0 left-0 w-1.5 h-1.5 border-b border-l border-emerald-500/50" />
+          <div className="absolute bottom-0 right-0 w-1.5 h-1.5 border-b border-r border-emerald-500/50" />
+
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-xs font-bold text-emerald-400 uppercase tracking-widest flex items-center gap-2">
+              <Activity className="w-3 h-3 text-emerald-400" /> M2M ECONOMY (ARC NANOPAYMENTS)
+            </h3>
+          </div>
+          <p className="text-[10px] text-gray-500 font-mono uppercase tracking-widest mb-4">Live sub-cent transactions between autonomous agents</p>
+          
+          <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar space-y-3">
+            {nanoLedger.map((tx) => (
+              <div key={tx.id} className="bg-black/50 border border-gray-800 rounded-sm p-3 hover:border-emerald-500/30 transition-colors group">
+                <div className="flex justify-between items-center mb-1.5">
+                  <span className="text-[10px] font-bold text-gray-300 font-mono group-hover:text-emerald-400 transition-colors">{tx.from} &rarr; {tx.to}</span>
+                  <span className="text-[10px] font-bold text-emerald-400 font-mono drop-shadow-[0_0_5px_rgba(52,211,153,0.3)]">{tx.amount}</span>
+                </div>
+                <div className="flex justify-between items-center text-[9px] font-mono uppercase tracking-widest">
+                  <span className="text-gray-500">Service: {tx.reason}</span>
+                  <span className="text-gray-600">No Human Appr.</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
 
       {/* Members Grid */}
